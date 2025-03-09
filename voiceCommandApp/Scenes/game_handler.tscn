@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cm7gvaws2hwen"]
 
-[ext_resource type="Script" path="res://Scripts/Points.gd" id="1_oej0d"]
+[ext_resource type="Script" path="res://Scripts/Points.gd" id="1_xjfns"]
 
 [node name="GameHandler" type="Control"]
 layout_mode = 3
@@ -9,7 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_oej0d")
+script = ExtResource("1_xjfns")
 
 [node name="TBreak_P1_btn" type="Button" parent="."]
 visible = false
@@ -159,7 +159,48 @@ offset_top = 102.0
 offset_right = 513.0
 offset_bottom = 145.0
 
+[node name="Listen_btn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 301.0
+offset_right = 290.0
+offset_bottom = 359.0
+text = "Listen"
+
+[node name="Stop_btn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 46.0
+offset_top = 391.0
+offset_right = 290.0
+offset_bottom = 451.0
+text = "Stop"
+
+[node name="GetOutput_btn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 46.0
+offset_top = 486.0
+offset_right = 291.0
+offset_bottom = 544.0
+text = "GetOutput"
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 338.0
+offset_top = 299.0
+offset_right = 609.0
+offset_bottom = 545.0
+
+[node name="TextEdit2" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 649.0
+offset_top = 302.0
+offset_right = 920.0
+offset_bottom = 548.0
+
 [connection signal="pressed" from="TBreak_P1_btn" to="." method="_on_t_break_p_1_btn_pressed"]
 [connection signal="pressed" from="TBreak_P2_btn" to="." method="_on_t_break_p_2_btn_pressed"]
 [connection signal="pressed" from="Button_P1" to="." method="_on_button_p_1_pressed"]
 [connection signal="pressed" from="Button_P2" to="." method="_on_button_p_2_pressed"]
+[connection signal="button_down" from="Listen_btn" to="." method="_on_listen_btn_button_down"]
+[connection signal="button_down" from="Stop_btn" to="." method="_on_stop_btn_button_down"]
+[connection signal="button_down" from="GetOutput_btn" to="." method="_on_get_output_btn_button_down"]
