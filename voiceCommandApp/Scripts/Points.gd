@@ -32,14 +32,26 @@ var sets_ganados_p2 = 0
 var current_set = 0
 
 var STT
+var is_listening_for_keyword = true  # Estado para escuchar la palabra clave
+var keyword = "okay elvia"  # Palabra clave para activar el modo de escucha
+var is_listening_active = false  # Estado para verificar si la escucha está activa
 
 func _ready():
+	# Solicita permiso para usar el micrófono
 	OS.request_permission("RECORD_AUDIO")
+	
+	# Verifica si el singleton "SpeechToText" está disponible
 	if Engine.has_singleton("SpeechToText"):
 		STT = Engine.get_singleton("SpeechToText")
 		STT.setLanguage("es")
 		STT.connect("error", self._on_error)
 		STT.connect("listening_completed", self._on_listening_completed)
+	
+			
+	# Inicia la escucha continua para detectar la palabra clave
+		_start_listening()
+	else:
+		print("Error: El singleton 'SpeechToText' no está disponible.")
 	
 	
 	# Obtenemos el contenedor de labels de juegos
@@ -241,31 +253,131 @@ func _reset_scores():
 	player2_score = 0
 	update_score_labels()
 	
+#func _on_listening_completed(args):
+	#$TextEdit.text = str(args)
+	
+#Función para iniciar la escucha
+func _start_listening():
+	if STT and not is_listening_active:
+		STT.listen() # Escucha continuamente
+		is_listening_active = true
+	
+	
+## Función que se llama cuando se completa la escucha
+#func _on_listening_completed(args):
+	#var recognized_text = str(args).to_lower()  # Convierte el texto a minúsculas
+	#
+	#if is_listening_for_keyword:
+		## Verifica si el texto reconocido contiene la palabra clave
+		#if keyword in recognized_text:
+			#print("Palabra clave detectada. Activando modo de escucha...")
+			#is_listening_for_keyword = false  # Deja de escuchar la palabra clave
+			#$TextEdit.text = "Escuchando... (Di algo)"
+	#else:
+		## Verifica si la frase es "equipo 1" o "equipo 2"
+		#if "equipo 1" in recognized_text:
+			#print("Activando función del botón 'Button_P1'")
+			#_on_button_p_1_pressed()  # Llama a la función del botón "Button_P1"
+		#elif "equipo 2" in recognized_text:
+			#print("Activando función del botón 'Button_P2'")
+			#_on_button_p_2_pressed()  # Llama a la función del botón "Button_P2"
+		#else:
+			#print("Frase no reconocida: ", recognized_text)
+		#
+		## Vuelve a escuchar la palabra clave
+		#is_listening_for_keyword = true
+		#$TextEdit.text = "Esperando palabra clave..."
+	#
+	## Reinicia la escucha después de procesar el texto
+	#is_listening_active = false  # Marca la escucha como inactiva
+	#_start_listening()  # Reinicia la escucha
+	
+# Función que se llama cuando se completa la escucha
 func _on_listening_completed(args):
-	$TextEdit.text = str(args)
+	var recognized_text = str(args).to_lower()  # Convierte el texto a minúsculas
+	
+	if is_listening_for_keyword:
+		# Verifica si el texto reconocido contiene la palabra clave
+		if keyword in recognized_text:
+			print("Palabra clave detectada. Activando modo de escucha...")
+			is_listening_for_keyword = false  # Deja de escuchar la palabra clave
+			$TextEdit.text = "Escuchando... (Di algo)"
+	else:
+		# Verifica si la frase es "equipo 1" o "equipo 2"
+		if "equipo 1" in recognized_text:
+			# Verifica qué botón está visible y activa la función correspondiente
+			if $Button_P1.visible:
+				print("Activando función del botón 'Button_P1'")
+				_on_button_p_1_pressed()  # Llama a la función del botón "Button_P1"
+			elif $TBreak_P1_btn.visible:
+				print("Activando función del botón 'TBreak_P1_btn'")
+				_on_t_break_p_1_btn_pressed()  # Llama a la función del botón "TBreak_P1_btn"
+			else:
+				print("Ningún botón del equipo 1 está visible.")
+		
+		elif "equipo 2" in recognized_text:
+			# Verifica qué botón está visible y activa la función correspondiente
+			if $Button_P2.visible:
+				print("Activando función del botón 'Button_P2'")
+				_on_button_p_2_pressed()  # Llama a la función del botón "Button_P2"
+			elif $TBreak_P2_btn.visible:
+				print("Activando función del botón 'TBreak_P2_btn'")
+				_on_t_break_p_2_btn_pressed()  # Llama a la función del botón "TBreak_P2_btn"
+			else:
+				print("Ningún botón del equipo 2 está visible.")
+		
+		else:
+			print("Frase no reconocida: ", recognized_text)
+		
+		# Vuelve a escuchar la palabra clave
+		is_listening_for_keyword = true
+		$TextEdit.text = "Esperando palabra clave..."
+	
+	# Reinicia la escucha después de procesar el texto
+	is_listening_active = false  # Marca la escucha como inactiva
+	_start_listening()  # Reinicia la escucha
 
 func _on_error(errorcode):
 	print("Error: " + errorcode)
-
+	#Reinicia la escucha en caso de error
+	is_listening_active = false  # Marca la escucha como inactiva
+	_start_listening()
+	
+# Función que se llama cada frame
+func _process(delta):
+	# Verifica si la escucha está activa y la reinicia si es necesario
+	if not is_listening_active:
+		_start_listening()
+	
+##Botón de tie-breal del jugador 1
 func _on_t_break_p_1_btn_pressed():
 	_increment_tiebreak_score(1)
 
+#Botón de tie-breal del jugador 2
 func _on_t_break_p_2_btn_pressed():
 	_increment_tiebreak_score(2)
 
 
 
 func _on_listen_btn_button_down():
-	STT.listen()
+	#var words = STT.getWords()
+	#$TextEdit.text = words
+	_start_listening()
 	pass # Replace with function body.
 
 
 func _on_stop_btn_button_down():
-	STT.Stop()
+	#STT.Stop()
+	if STT:
+		STT.Stop()
+		is_listening_active = false  # Marca la escucha como inactiva
 	pass # Replace with function body.
 
 
 func _on_get_output_btn_button_down():
-	var words = STT.getWords()
-	$TextEdit2.text = words
+	#var words = STT.getWords()
+	#$TextEdit2.text = words
+	if STT:
+		var words = STT.getWords()
+		$TextEdit2.text = words
 	pass # Replace with function body.
