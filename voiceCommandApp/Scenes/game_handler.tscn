@@ -1,206 +1,251 @@
-[gd_scene load_steps=2 format=3 uid="uid://cm7gvaws2hwen"]
+[gd_scene load_steps=4 format=3 uid="uid://cm7gvaws2hwen"]
 
 [ext_resource type="Script" path="res://Scripts/Points.gd" id="1_xjfns"]
+[ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="2_r25a3"]
+[ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="3_mxoyr"]
 
 [node name="GameHandler" type="Control"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 4
 script = ExtResource("1_xjfns")
+
+[node name="Button_P1" type="Button" parent="."]
+layout_mode = 2
+offset_left = -512.0
+offset_top = -260.0
+offset_right = -362.0
+offset_bottom = -110.0
+text = "P1"
+
+[node name="Button_P2" type="Button" parent="."]
+layout_mode = 2
+offset_left = -512.0
+offset_top = -68.0
+offset_right = -362.0
+offset_bottom = 82.0
+text = "P2"
 
 [node name="TBreak_P1_btn" type="Button" parent="."]
 visible = false
 layout_mode = 0
-offset_left = 820.0
-offset_top = 92.0
-offset_right = 888.0
-offset_bottom = 148.0
+offset_left = 384.0
+offset_top = -260.0
+offset_right = 536.0
+offset_bottom = -108.0
 text = "P1"
 
 [node name="TBreak_P2_btn" type="Button" parent="."]
 visible = false
 layout_mode = 0
-offset_left = 824.0
-offset_top = 178.0
-offset_right = 886.0
-offset_bottom = 225.0
+offset_left = 384.0
+offset_top = -68.0
+offset_right = 536.0
+offset_bottom = 84.0
 text = "P2"
 
-[node name="Button_P1" type="Button" parent="."]
+[node name="Games_Container" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 174.0
-offset_top = 73.0
-offset_right = 261.0
-offset_bottom = 160.0
-text = "P1"
+offset_left = -256.0
+offset_top = -293.0
+offset_right = 518.0
+offset_bottom = 187.0
+scale = Vector2(0.783935, 0.783935)
 
-[node name="Button_P2" type="Button" parent="."]
-layout_mode = 0
-offset_left = 168.0
-offset_top = 174.0
-offset_right = 266.0
-offset_bottom = 262.0
-text = "P2"
+[node name="VBoxContainer" type="HBoxContainer" parent="Games_Container"]
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Points_P1" type="Label" parent="."]
-layout_mode = 0
-offset_left = 959.0
-offset_top = 95.0
-offset_right = 1030.0
-offset_bottom = 161.0
-
-[node name="Points_P2" type="Label" parent="."]
-layout_mode = 0
-offset_left = 966.0
-offset_top = 187.0
-offset_right = 1034.0
-offset_bottom = 243.0
-
-[node name="Games_Container" type="Label" parent="."]
-layout_mode = 0
-offset_left = 301.0
-offset_top = 86.0
-offset_right = 757.0
-offset_bottom = 261.0
-
-[node name="Game1_P1" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_right = 58.0
-offset_bottom = 61.0
+[node name="Points_P1" type="Label" parent="Games_Container/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "0"
+label_settings = ExtResource("3_mxoyr")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="Game2_P1" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 94.0
-offset_top = 4.0
-offset_right = 156.0
-offset_bottom = 54.0
+[node name="Game1_P1" type="Label" parent="Games_Container/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="Game3_P1" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 173.0
-offset_top = 8.0
-offset_right = 238.0
-offset_bottom = 55.0
+[node name="Game2_P1" type="Label" parent="Games_Container/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="Game4_P1" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 288.0
-offset_top = 16.0
-offset_right = 356.0
-offset_bottom = 66.0
+[node name="Game3_P1" type="Label" parent="Games_Container/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="Game5_P1" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 368.0
-offset_top = 12.0
-offset_right = 426.0
-offset_bottom = 64.0
+[node name="Game4_P1" type="Label" parent="Games_Container/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="Game1_P2" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_top = 102.0
-offset_right = 58.0
-offset_bottom = 163.0
+[node name="Game5_P1" type="Label" parent="Games_Container/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="Game2_P2" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 94.0
-offset_top = 106.0
-offset_right = 156.0
-offset_bottom = 156.0
-text = "0"
-
-[node name="Game3_P2" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 173.0
-offset_top = 110.0
-offset_right = 238.0
-offset_bottom = 157.0
-text = "0"
-
-[node name="Game4_P2" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 288.0
-offset_top = 118.0
-offset_right = 356.0
-offset_bottom = 168.0
-text = "0"
-
-[node name="Game5_P2" type="Label" parent="Games_Container"]
-layout_mode = 0
-offset_left = 368.0
-offset_top = 114.0
-offset_right = 426.0
-offset_bottom = 166.0
-text = "0"
-
-[node name="TBreak_P1" type="Label" parent="Games_Container"]
+[node name="TBreak_P1" type="Label" parent="Games_Container/VBoxContainer"]
 visible = false
-layout_mode = 0
-offset_left = 441.0
-offset_top = 15.0
-offset_right = 524.0
-offset_bottom = 63.0
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("3_mxoyr")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
-[node name="TBreak_P2" type="Label" parent="Games_Container"]
+[node name="VBoxContainer2" type="HBoxContainer" parent="Games_Container"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Points_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("3_mxoyr")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="Game1_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="Game2_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="Game3_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="Game4_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="Game5_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("2_r25a3")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="TBreak_P2" type="Label" parent="Games_Container/VBoxContainer2"]
 visible = false
-layout_mode = 0
-offset_left = 438.0
-offset_top = 102.0
-offset_right = 513.0
-offset_bottom = 145.0
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"
+label_settings = ExtResource("3_mxoyr")
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
 [node name="Listen_btn" type="Button" parent="."]
+visible = false
 layout_mode = 0
-offset_left = 45.0
-offset_top = 301.0
-offset_right = 290.0
-offset_bottom = 359.0
+offset_left = -328.0
+offset_top = 54.0
+offset_right = -83.0
+offset_bottom = 112.0
 text = "Listen"
 
 [node name="Stop_btn" type="Button" parent="."]
+visible = false
 layout_mode = 0
-offset_left = 46.0
-offset_top = 391.0
-offset_right = 290.0
-offset_bottom = 451.0
+offset_left = -327.0
+offset_top = 144.0
+offset_right = -83.0
+offset_bottom = 204.0
 text = "Stop"
 
 [node name="GetOutput_btn" type="Button" parent="."]
+visible = false
 layout_mode = 0
-offset_left = 46.0
-offset_top = 486.0
-offset_right = 291.0
-offset_bottom = 544.0
+offset_left = -327.0
+offset_top = 239.0
+offset_right = -82.0
+offset_bottom = 297.0
 text = "GetOutput"
 
 [node name="TextEdit" type="TextEdit" parent="."]
+clip_contents = true
 layout_mode = 0
-offset_left = 338.0
-offset_top = 299.0
-offset_right = 609.0
-offset_bottom = 545.0
+offset_left = -192.0
+offset_top = 100.0
+offset_right = 24.0
+offset_bottom = 297.0
+wrap_mode = 1
 
 [node name="TextEdit2" type="TextEdit" parent="."]
+clip_contents = true
 layout_mode = 0
-offset_left = 649.0
-offset_top = 302.0
-offset_right = 920.0
-offset_bottom = 548.0
+offset_left = 128.0
+offset_top = 100.0
+offset_right = 345.0
+offset_bottom = 297.0
+text = "Debes decir la palabra clave \"GANA\" para iniciar el comando de voz. A continuacion indicar que equipo gano el punto. \"EQUIPO 1\" o \"EQUIPO 2\"."
+wrap_mode = 1
+scroll_fit_content_height = true
 
-[connection signal="pressed" from="TBreak_P1_btn" to="." method="_on_t_break_p_1_btn_pressed"]
-[connection signal="pressed" from="TBreak_P2_btn" to="." method="_on_t_break_p_2_btn_pressed"]
 [connection signal="pressed" from="Button_P1" to="." method="_on_button_p_1_pressed"]
 [connection signal="pressed" from="Button_P2" to="." method="_on_button_p_2_pressed"]
+[connection signal="pressed" from="TBreak_P1_btn" to="." method="_on_t_break_p_1_btn_pressed"]
+[connection signal="pressed" from="TBreak_P2_btn" to="." method="_on_t_break_p_2_btn_pressed"]
 [connection signal="button_down" from="Listen_btn" to="." method="_on_listen_btn_button_down"]
 [connection signal="button_down" from="Stop_btn" to="." method="_on_stop_btn_button_down"]
 [connection signal="button_down" from="GetOutput_btn" to="." method="_on_get_output_btn_button_down"]

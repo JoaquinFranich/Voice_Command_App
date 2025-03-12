@@ -33,7 +33,7 @@ var current_set = 0
 
 var STT
 var is_listening_for_keyword = true  # Estado para escuchar la palabra clave
-var keyword = "okay elvia"  # Palabra clave para activar el modo de escucha
+var keyword = "gana"  # Palabra clave para activar el modo de escucha
 var is_listening_active = false  # Estado para verificar si la escucha está activa
 
 func _ready():
@@ -55,22 +55,23 @@ func _ready():
 	
 	
 	# Obtenemos el contenedor de labels de juegos
-	var games_container = get_node("Games_Container")
+	var games_container1 = get_node("Games_Container/VBoxContainer")
+	var games_container2 = get_node("Games_Container/VBoxContainer2")
 
 	# Obtenemos los labels para los sets de cada jugador
 	for i in range(1, 6):
-		game_labels_p1.append(games_container.get_node("Game" + str(i) + "_P1"))
-		game_labels_p2.append(games_container.get_node("Game" + str(i) + "_P2"))
+		game_labels_p1.append(games_container1.get_node("Game" + str(i) + "_P1"))
+		game_labels_p2.append(games_container2.get_node("Game" + str(i) + "_P2"))
 
 	# Inicializamos los arreglos de puntaje con ceros
 	game_scores_p1 = [0, 0, 0, 0, 0]
 	game_scores_p2 = [0, 0, 0, 0, 0]
 
 	# Obtenemos los labels de los puntos de cada jugador
-	label_p1 = get_node("Points_P1")
-	label_p2 = get_node("Points_P2")
-	tbreak_label_p1 = get_node("Games_Container/TBreak_P1")
-	tbreak_label_p2 = get_node("Games_Container/TBreak_P2")
+	label_p1 = get_node("Games_Container/VBoxContainer/Points_P1")
+	label_p2 = get_node("Games_Container/VBoxContainer2/Points_P2")
+	tbreak_label_p1 = get_node("Games_Container/VBoxContainer/TBreak_P1")
+	tbreak_label_p2 = get_node("Games_Container/VBoxContainer2/TBreak_P2")
 
 	# Actualizamos los labels iniciales
 	update_score_labels()
@@ -253,44 +254,11 @@ func _reset_scores():
 	player2_score = 0
 	update_score_labels()
 	
-#func _on_listening_completed(args):
-	#$TextEdit.text = str(args)
-	
 #Función para iniciar la escucha
 func _start_listening():
 	if STT and not is_listening_active:
 		STT.listen() # Escucha continuamente
 		is_listening_active = true
-	
-	
-## Función que se llama cuando se completa la escucha
-#func _on_listening_completed(args):
-	#var recognized_text = str(args).to_lower()  # Convierte el texto a minúsculas
-	#
-	#if is_listening_for_keyword:
-		## Verifica si el texto reconocido contiene la palabra clave
-		#if keyword in recognized_text:
-			#print("Palabra clave detectada. Activando modo de escucha...")
-			#is_listening_for_keyword = false  # Deja de escuchar la palabra clave
-			#$TextEdit.text = "Escuchando... (Di algo)"
-	#else:
-		## Verifica si la frase es "equipo 1" o "equipo 2"
-		#if "equipo 1" in recognized_text:
-			#print("Activando función del botón 'Button_P1'")
-			#_on_button_p_1_pressed()  # Llama a la función del botón "Button_P1"
-		#elif "equipo 2" in recognized_text:
-			#print("Activando función del botón 'Button_P2'")
-			#_on_button_p_2_pressed()  # Llama a la función del botón "Button_P2"
-		#else:
-			#print("Frase no reconocida: ", recognized_text)
-		#
-		## Vuelve a escuchar la palabra clave
-		#is_listening_for_keyword = true
-		#$TextEdit.text = "Esperando palabra clave..."
-	#
-	## Reinicia la escucha después de procesar el texto
-	#is_listening_active = false  # Marca la escucha como inactiva
-	#_start_listening()  # Reinicia la escucha
 	
 # Función que se llama cuando se completa la escucha
 func _on_listening_completed(args):
@@ -301,7 +269,7 @@ func _on_listening_completed(args):
 		if keyword in recognized_text:
 			print("Palabra clave detectada. Activando modo de escucha...")
 			is_listening_for_keyword = false  # Deja de escuchar la palabra clave
-			$TextEdit.text = "Escuchando... (Di algo)"
+			$TextEdit.text = "Quien gano el punto? ('Di EQUIPO 1 o EQUIPO 2')"
 	else:
 		# Verifica si la frase es "equipo 1" o "equipo 2"
 		if "equipo 1" in recognized_text:
@@ -331,7 +299,7 @@ func _on_listening_completed(args):
 		
 		# Vuelve a escuchar la palabra clave
 		is_listening_for_keyword = true
-		$TextEdit.text = "Esperando palabra clave..."
+		$TextEdit.text = "Di la palabra clave 'GANA'."
 	
 	# Reinicia la escucha después de procesar el texto
 	is_listening_active = false  # Marca la escucha como inactiva
@@ -357,14 +325,9 @@ func _on_t_break_p_1_btn_pressed():
 func _on_t_break_p_2_btn_pressed():
 	_increment_tiebreak_score(2)
 
-
-
 func _on_listen_btn_button_down():
-	#var words = STT.getWords()
-	#$TextEdit.text = words
 	_start_listening()
 	pass # Replace with function body.
-
 
 func _on_stop_btn_button_down():
 	#STT.Stop()
@@ -372,7 +335,6 @@ func _on_stop_btn_button_down():
 		STT.Stop()
 		is_listening_active = false  # Marca la escucha como inactiva
 	pass # Replace with function body.
-
 
 func _on_get_output_btn_button_down():
 	#var words = STT.getWords()
