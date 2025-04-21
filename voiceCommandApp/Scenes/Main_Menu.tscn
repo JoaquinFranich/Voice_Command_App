@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3 uid="uid://b48xc6j3geok7"]
+
+[ext_resource type="Script" path="res://Scripts/SportSelection.gd" id="1_i06lb"]
+
+[node name="Main_Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i06lb")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 652.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.491
+anchor_right = 0.5
+anchor_bottom = 0.491
+offset_left = -225.0
+offset_top = -176.132
+offset_right = 234.0
+offset_bottom = 183.868
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuButton" type="MenuButton" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+text = "ELIGE LA DISCIPLINA"
+item_count = 3
+popup/item_0/text = "PADDLE"
+popup/item_0/id = 0
+popup/item_1/text = "TENNIS"
+popup/item_1/id = 1
+popup/item_2/text = "VOLEY"
+popup/item_2/id = 2
+
+[node name="Button2" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+text = "TUTORIAL"
+
+[node name="Button" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+text = "SALIR"

@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://cm7gvaws2hwen"]
+[gd_scene load_steps=4 format=3 uid="uid://dwvtp1j8rjqjc"]
 
-[ext_resource type="Script" path="res://Scripts/Points.gd" id="1_xjfns"]
-[ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="2_r25a3"]
-[ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="3_mxoyr"]
+[ext_resource type="Script" path="res://Scripts/Paddle_Counter.gd" id="1_prutt"]
+[ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="2_er2ho"]
+[ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="3_ue63s"]
 
-[node name="GameHandler" type="Control"]
+[node name="Paddle_Counter" type="Control"]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -14,7 +14,7 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
-script = ExtResource("1_xjfns")
+script = ExtResource("1_prutt")
 
 [node name="Button_P1" type="Button" parent="."]
 layout_mode = 2
@@ -66,7 +66,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("3_mxoyr")
+label_settings = ExtResource("2_er2ho")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -75,7 +75,7 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -84,7 +84,7 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -93,25 +93,27 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
 [node name="Game4_P1" type="Label" parent="Games_Container/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
 [node name="Game5_P1" type="Label" parent="Games_Container/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -121,7 +123,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("3_mxoyr")
+label_settings = ExtResource("2_er2ho")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -135,7 +137,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("3_mxoyr")
+label_settings = ExtResource("2_er2ho")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -144,7 +146,7 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -153,7 +155,7 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -162,25 +164,27 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
 [node name="Game4_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
 [node name="Game5_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("2_r25a3")
+label_settings = ExtResource("3_ue63s")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
@@ -190,7 +194,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
-label_settings = ExtResource("3_mxoyr")
+label_settings = ExtResource("2_er2ho")
 horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true

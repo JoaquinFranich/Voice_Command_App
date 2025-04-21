@@ -1,7 +1,7 @@
 extends Control
 
 # Opciones de puntaje para el juego
-var score_options = ["0", "15", "30", "40", "Deuce", "Advantage"]
+var score_options = ["0", "15", "30", "40"]
 # Puntaje del jugador 1
 var player1_score = 0
 # Puntaje del jugador 2
@@ -11,9 +11,9 @@ var label_p1
 # Label que muestra el puntaje del jugador 2
 var label_p2
 # Puntos de los juegos del jugador 1
-var game_scores_p1 = [0, 0, 0, 0, 0]
+var game_scores_p1 = [0, 0, 0]
 # Puntos de los juegos del jugador 2
-var game_scores_p2 = [0, 0, 0, 0, 0]
+var game_scores_p2 = [0, 0, 0]
 # Labels que muestran los puntajes de los juegos del jugador 1
 var game_labels_p1 = []
 # Labels que muestran los puntajes de los juegos del jugador 2
@@ -59,13 +59,13 @@ func _ready():
 	var games_container2 = get_node("Games_Container/VBoxContainer2")
 
 	# Obtenemos los labels para los sets de cada jugador
-	for i in range(1, 6):
+	for i in range(1, 4):
 		game_labels_p1.append(games_container1.get_node("Game" + str(i) + "_P1"))
 		game_labels_p2.append(games_container2.get_node("Game" + str(i) + "_P2"))
 
 	# Inicializamos los arreglos de puntaje con ceros
-	game_scores_p1 = [0, 0, 0, 0, 0]
-	game_scores_p2 = [0, 0, 0, 0, 0]
+	game_scores_p1 = [0, 0, 0]
+	game_scores_p2 = [0, 0, 0]
 
 	# Obtenemos los labels de los puntos de cada jugador
 	label_p1 = get_node("Games_Container/VBoxContainer/Points_P1")
@@ -111,17 +111,17 @@ func _increment_score(player):
 func _check_win_condition():
 	var score_diff = abs(player1_score - player2_score)
 	if player1_score >= 4 or player2_score >= 4:
-		if score_diff >= 2:
+		if score_diff >= 1:
 			if player1_score > player2_score:
 				# Jugador 1 gana el punto
 				game_scores_p1[current_game_index] += 1
-				player1_score = 5
+				player1_score = 3
 				player2_score = 0
 			else:
 				# Jugador 2 gana el punto
 				game_scores_p2[current_game_index] += 1
 				player1_score = 0
-				player2_score = 5
+				player2_score = 3
 			# Verifica la condición de victoria del set
 			_check_set_win_condition()
 			update_game_labels()
@@ -199,7 +199,7 @@ func _increment_tiebreak_score(player):
 
 func _end_game():
 	# Verificar si algún jugador ya ganó el partido
-	if sets_ganados_p1 >= 3 or sets_ganados_p2 >= 3:
+	if sets_ganados_p1 >= 2 or sets_ganados_p2 >= 2:
 		# Determinar quien gano el juego
 		if sets_ganados_p1 > sets_ganados_p2:
 			print("Juego terminado. Ganador: Jugador 1")
@@ -207,8 +207,8 @@ func _end_game():
 			print("Juego terminado. Ganador: Jugador 2")
 		# Aquí puedes implementar lógica adicional para finalizar el juego o reiniciarlo
 		current_game_index = 0
-		game_scores_p1 = [0, 0, 0, 0, 0]
-		game_scores_p2 = [0, 0, 0, 0, 0]
+		game_scores_p1 = [0, 0, 0]
+		game_scores_p2 = [0, 0, 0]
 		sets_ganados_p1 = 0
 		sets_ganados_p2 = 0
 		return  # Finalizamos la función aqui
@@ -217,12 +217,12 @@ func _end_game():
 	current_game_index += 1
 
 	# Si ya se jugaron todos los sets, se reinicia el juego
-	if current_game_index >= 5:
+	if current_game_index >= 3:
 		print("Juego terminado por completar todos los sets")
 		# Aquí puedes implementar lógica para finalizar el juego o reiniciarlo
 		current_game_index = 0
-		game_scores_p1 = [0, 0, 0, 0, 0]
-		game_scores_p2 = [0, 0, 0, 0, 0]
+		game_scores_p1 = [0, 0, 0]
+		game_scores_p2 = [0, 0, 0]
 		sets_ganados_p1 = 0
 		sets_ganados_p2 = 0
 
@@ -230,8 +230,8 @@ func _reset_game():
 	sets_ganados_p1 = 0
 	sets_ganados_p2 = 0
 	current_set = 0
-	game_scores_p1 = [0, 0, 0, 0, 0]
-	game_scores_p2 = [0, 0, 0, 0, 0]
+	game_scores_p1 = [0, 0, 0]
+	game_scores_p2 = [0, 0, 0]
 
 # Un ejemplo de llamada a _check_set_win_condition()
 func _jugar_set(puntos_p1, puntos_p2):
@@ -246,8 +246,8 @@ func _input(event):
 		_jugar_set(4, 2)
 
 func deuce():
-	player1_score = 4
-	player2_score = 4
+	player1_score = 3
+	player2_score = 3
 
 func _reset_scores():
 	player1_score = 0
