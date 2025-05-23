@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://cm7gvaws2hwen"]
+[gd_scene load_steps=5 format=3 uid="uid://cm7gvaws2hwen"]
 
 [ext_resource type="Script" path="res://Scripts/Tennis_Counter.gd" id="1_xjfns"]
 [ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="2_r25a3"]
 [ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="3_mxoyr"]
+[ext_resource type="Texture2D" uid="uid://b6ppvdn6pci3l" path="res://icon.svg" id="4_hvcdc"]
 
 [node name="Tennis_Counter" type="Control"]
 layout_mode = 3
@@ -241,6 +242,16 @@ offset_bottom = 297.0
 text = "Debes decir la palabra clave \"GANA\" para iniciar el comando de voz. A continuacion indicar que equipo gano el punto. \"EQUIPO 1\" o \"EQUIPO 2\"."
 wrap_mode = 1
 scroll_fit_content_height = true
+
+[node name="ServeIndicator" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 0
+offset_left = 371.0
+offset_top = -216.0
+offset_right = 411.0
+offset_bottom = -176.0
+texture = ExtResource("4_hvcdc")
+expand_mode = 1
 
 [connection signal="pressed" from="Button_P1" to="." method="_on_button_p_1_pressed"]
 [connection signal="pressed" from="Button_P2" to="." method="_on_button_p_2_pressed"]

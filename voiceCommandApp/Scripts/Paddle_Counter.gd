@@ -31,6 +31,10 @@ var sets_ganados_p1 = 0
 var sets_ganados_p2 = 0
 var current_set = 0
 
+var serving_player := 1 # 1 = Jugador 1, 2 = Jugador 2
+
+@onready var serve_indicator := $ServeIndicator  # Crear nodo TextureRect en escena
+
 var STT
 var is_listening_for_keyword = true  # Estado para escuchar la palabra clave
 var keyword = "gana"  # Palabra clave para activar el modo de escucha
@@ -76,6 +80,15 @@ func _ready():
 	# Actualizamos los labels iniciales
 	update_score_labels()
 	update_game_labels()
+	
+func _update_serve_indicator():
+	# Mueve el indicador a la posición correspondiente
+	if serving_player == 1:
+		serve_indicator.position = Vector2(371, -216)  # Posición izquierda
+	else:
+		serve_indicator.position = Vector2(371, -28)  # Posición derecha
+
+var _last_total_games := 0  # Para detectar cambios en juegos
 
 func update_score_labels():
 	if player1_score >= score_options.size():
@@ -316,6 +329,14 @@ func _process(delta):
 	# Verifica si la escucha está activa y la reinicia si es necesario
 	if not is_listening_active:
 		_start_listening()
+	
+		# Lógica para detectar cambio de saque cada juego
+	var current_total = game_scores_p1[current_game_index] + game_scores_p2[current_game_index]
+	
+	if current_total > _last_total_games:
+		serving_player = 2 if serving_player == 1 else 1
+		_update_serve_indicator()
+		_last_total_games = current_total
 	
 ##Botón de tie-breal del jugador 1
 func _on_t_break_p_1_btn_pressed():
