@@ -21,4 +21,4 @@ func file_menu(id):
 		1:
 			get_tree().change_scene_to_file("res://Scenes/Tennis_Counter.tscn")
 		2:
-			print("VOLEY")
+			get_tree().change_scene_to_file("res://Scenes/Voley_Counter.tscn")

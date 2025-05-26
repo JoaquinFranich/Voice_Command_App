@@ -104,15 +104,7 @@ func _increment_score_voly(player):
 	
 	_check_win_condition_voly()
 	update_score_labels_voly()
-
-#func _increment_score_voly(player):
-	#if player == 1:
-		#player1_score_voly += 1
-	#else:
-		#player2_score_voly += 1
-#
-	#_check_win_condition_voly()
-	#update_score_labels_voly()
+ 
 
 func _check_win_condition_voly():
 	var target = 25

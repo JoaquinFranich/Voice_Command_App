@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Voice Command App"
-run/main_scene="res://Scenes/Tennis_Counter.tscn"
+run/main_scene="res://Scenes/Main_Menu.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
