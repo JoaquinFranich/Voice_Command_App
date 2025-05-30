@@ -33,6 +33,14 @@ var current_set = 0
 
 var serving_player := 1 # 1 = Jugador 1, 2 = Jugador 2
 
+# Estados posibles para los sets
+enum SetState { NO_INICIADO, EN_PROGRESO, FINALIZADO }
+# Array para trackear el estado de cada set
+var set_states = [SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO]
+var set_timers = [0.0, 0.0, 0.0, 0.0, 0.0]  # Tiempo acumulado por set en segundos
+var active_set = -1  # Set actualmente en juego
+var timer_labels = []  # Labels para mostrar los tiempos
+
 @onready var serve_indicator := $ServeIndicator  # Crear nodo TextureRect en escena
 
 var STT
@@ -51,12 +59,15 @@ func _ready():
 		STT.connect("error", self._on_error)
 		STT.connect("listening_completed", self._on_listening_completed)
 	
-			
 	# Inicia la escucha continua para detectar la palabra clave
 		_start_listening()
 	else:
 		print("Error: El singleton 'SpeechToText' no está disponible.")
 	
+	# Inicializar labels de tiempo
+	var timer_container = get_node("Games_Container/Timer_Container")
+	for i in range(1, 6):
+		timer_labels.append(timer_container.get_node("Set_Timer" + str(i)))
 	
 	# Obtenemos el contenedor de labels de juegos
 	var games_container1 = get_node("Games_Container/VBoxContainer")
@@ -81,12 +92,21 @@ func _ready():
 	update_score_labels()
 	update_game_labels()
 	
+	# Iniciamos el primer set
+	_start_first_set()
+
+# Función para formatear el tiempo
+func _format_time(seconds: float) -> String:
+	var minutes = int(seconds) / 60
+	var secs = int(seconds) % 60
+	return "%02d:%02d" % [minutes, secs]
+	
 func _update_serve_indicator():
 	# Mueve el indicador a la posición correspondiente
 	if serving_player == 1:
-		serve_indicator.position = Vector2(371, -216)  # Posición izquierda
+		serve_indicator.position = Vector2(408, -184)  # Posición izquierda
 	else:
-		serve_indicator.position = Vector2(371, -28)  # Posición derecha
+		serve_indicator.position = Vector2(408, -16)  # Posición derecha
 
 var _last_total_games := 0  # Para detectar cambios en juegos
 
@@ -153,7 +173,31 @@ func _check_set_win_condition():
 			sets_ganados_p1 += 1
 		else:
 			sets_ganados_p2 += 1
-		_end_game()
+		
+		# Verificar primero si hay victoria del partido
+		if sets_ganados_p1 >= 3 or sets_ganados_p2 >= 3:
+			_end_game()
+			return
+			
+		# Si no hay victoria, manejar el cambio de set
+		# Marcar el set actual como finalizado
+		set_states[current_game_index] = SetState.FINALIZADO
+		timer_labels[current_game_index].modulate = Color(1, 1, 1, 0.5)  # Hacer transparente
+		
+		# Si no es el último set, preparar el siguiente
+		if current_game_index < 4:  # 4 es el índice del último set (0-4)
+			# Alternar el servicio para el siguiente set
+			serving_player = 2 if serving_player == 1 else 1
+			_update_serve_indicator()
+			
+			current_game_index += 1
+			_last_total_games = 0  # Reiniciar contador para el nuevo set
+			
+			# Iniciar el nuevo set
+			active_set = current_game_index
+			set_states[active_set] = SetState.EN_PROGRESO
+			timer_labels[active_set].modulate = Color(1, 1, 1, 1)  # Restaurar opacidad
+			timer_labels[active_set].text = "00:00"
 
 func _start_tie_break():
 	print("Comienza el Tie-Break")
@@ -213,31 +257,22 @@ func _increment_tiebreak_score(player):
 func _end_game():
 	# Verificar si algún jugador ya ganó el partido
 	if sets_ganados_p1 >= 3 or sets_ganados_p2 >= 3:
+		# Asegurar que el último set quede marcado como finalizado
+		if active_set >= 0:
+			set_states[active_set] = SetState.FINALIZADO
+			timer_labels[active_set].modulate = Color(1, 1, 1, 0.5)
+		
 		# Determinar quien gano el juego
 		if sets_ganados_p1 > sets_ganados_p2:
 			print("Juego terminado. Ganador: Jugador 1")
 		else:
 			print("Juego terminado. Ganador: Jugador 2")
-		# Aquí puedes implementar lógica adicional para finalizar el juego o reiniciarlo
-		current_game_index = 0
-		game_scores_p1 = [0, 0, 0, 0, 0]
-		game_scores_p2 = [0, 0, 0, 0, 0]
-		sets_ganados_p1 = 0
-		sets_ganados_p2 = 0
+			
+		# Reiniciar el juego usando la función _reset_game
+		_reset_game()
 		return  # Finalizamos la función aqui
 
-	# Avanzamos al siguiente juego si la condición de victoria no se cumplió
-	current_game_index += 1
-
-	# Si ya se jugaron todos los sets, se reinicia el juego
-	if current_game_index >= 5:
-		print("Juego terminado por completar todos los sets")
-		# Aquí puedes implementar lógica para finalizar el juego o reiniciarlo
-		current_game_index = 0
-		game_scores_p1 = [0, 0, 0, 0, 0]
-		game_scores_p2 = [0, 0, 0, 0, 0]
-		sets_ganados_p1 = 0
-		sets_ganados_p2 = 0
+	# Si el juego no ha terminado, el cambio de set ya se manejó en _check_set_win_condition
 
 func _reset_game():
 	sets_ganados_p1 = 0
@@ -245,6 +280,20 @@ func _reset_game():
 	current_set = 0
 	game_scores_p1 = [0, 0, 0, 0, 0]
 	game_scores_p2 = [0, 0, 0, 0, 0]
+	_last_total_games = 0  # Reiniciar el contador de juegos totales
+	serving_player = 1  # Reiniciar al jugador que saca al inicio del partido
+	_update_serve_indicator()
+	
+	# Reiniciar todos los timers y estados
+	set_timers = [0.0, 0.0, 0.0, 0.0, 0.0]
+	set_states = [SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO]
+	active_set = -1
+	for label in timer_labels:
+		label.text = "00:00"
+		label.modulate = Color(1, 1, 1, 0.5)
+	
+	# Iniciar el primer set
+	_start_first_set()
 
 # Un ejemplo de llamada a _check_set_win_condition()
 func _jugar_set(puntos_p1, puntos_p2):
@@ -254,7 +303,7 @@ func _jugar_set(puntos_p1, puntos_p2):
 
 func _input(event):
 	if event.is_action_pressed("ui_accept"):
-		_jugar_set(2, 4)
+		_test_serve_indicator()
 	if event.is_action_pressed("ui_cancel"):
 		_jugar_set(4, 2)
 
@@ -326,6 +375,11 @@ func _on_error(errorcode):
 	
 # Función que se llama cada frame
 func _process(delta):
+	# Actualizar timer del set actual
+	if active_set >= 0 && active_set < 5 && set_states[active_set] == SetState.EN_PROGRESO:
+		set_timers[active_set] += delta
+		timer_labels[active_set].text = _format_time(set_timers[active_set])
+	
 	# Verifica si la escucha está activa y la reinicia si es necesario
 	if not is_listening_active:
 		_start_listening()
@@ -363,3 +417,40 @@ func _on_get_output_btn_button_down():
 		var words = STT.getWords()
 		$TextEdit2.text = words
 	pass # Replace with function body.
+
+# Función para iniciar el primer set
+func _start_first_set():
+	active_set = 0  # Activamos el primer set
+	set_states[0] = SetState.EN_PROGRESO  # Marcamos el primer set como en progreso
+	timer_labels[0].modulate = Color(1, 1, 1, 1)  # Opacidad normal para el primer timer
+	timer_labels[0].text = "00:00"  # Inicializamos el texto del timer
+
+# Función para probar el ServeIndicator
+func _test_serve_indicator():
+	print("Iniciando prueba del ServeIndicator")
+	print("Servicio inicial: Jugador ", serving_player)
+	
+	# Simular primer set
+	var points_sequence = [
+		[1, 0], # Jugador 1 gana
+		[1, 1], # Jugador 2 gana
+		[2, 1], # Jugador 1 gana
+		[3, 1], # Jugador 1 gana
+		[3, 2], # Jugador 2 gana
+		[4, 2], # Jugador 1 gana
+		[4, 3], # Jugador 2 gana
+		[5, 3], # Jugador 1 gana
+		[5, 4], # Jugador 2 gana
+		[6, 4]  # Jugador 1 gana el set
+	]
+	
+	print("\nSimulando Primer Set:")
+	for points in points_sequence:
+		game_scores_p1[current_game_index] = points[0]
+		game_scores_p2[current_game_index] = points[1]
+		print("Puntuación: ", points[0], "-", points[1], " | Sirve: Jugador ", serving_player)
+		if points[0] == 6 or points[1] == 6:
+			_check_set_win_condition()
+			print("\nFin del Set | Nuevo servidor: Jugador ", serving_player)
+	
+	print("\nIniciando Segundo Set | Sirve: Jugador ", serving_player)

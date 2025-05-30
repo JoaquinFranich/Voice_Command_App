@@ -224,8 +224,15 @@ func _end_game():
 		game_scores_p2 = [0, 0, 0]
 		sets_ganados_p1 = 0
 		sets_ganados_p2 = 0
+		serving_player = 1  # Reiniciamos el saque al jugador 1 al iniciar un nuevo partido
+		_update_serve_indicator()
 		return  # Finalizamos la función aqui
 
+	# Cambiamos el saque al terminar el set
+	serving_player = 2 if serving_player == 1 else 1
+	_update_serve_indicator()
+	_last_total_games = 0  # Reiniciamos el contador de juegos para el nuevo set
+	
 	# Avanzamos al siguiente juego si la condición de victoria no se cumplió
 	current_game_index += 1
 
@@ -238,6 +245,8 @@ func _end_game():
 		game_scores_p2 = [0, 0, 0]
 		sets_ganados_p1 = 0
 		sets_ganados_p2 = 0
+		serving_player = 1  # Reiniciamos el saque al jugador 1 al iniciar un nuevo partido
+		_update_serve_indicator()
 
 func _reset_game():
 	sets_ganados_p1 = 0
