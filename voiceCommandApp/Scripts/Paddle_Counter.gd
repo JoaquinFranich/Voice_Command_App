@@ -33,6 +33,19 @@ var current_set = 0
 
 var serving_player := 1 # 1 = Jugador 1, 2 = Jugador 2
 
+# Variables de control para el tie-break
+var is_tiebreak_active = false
+var tiebreak_initial_server = 1
+var tiebreak_points_since_serve = 0
+
+# Estados posibles para los sets
+enum SetState { NO_INICIADO, EN_PROGRESO, FINALIZADO }
+# Array para trackear el estado de cada set
+var set_states = [SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO]
+var set_timers = [0.0, 0.0, 0.0]  # Tiempo acumulado por set en segundos
+var active_set = -1  # Set actualmente en juego
+var timer_labels = []  # Labels para mostrar los tiempos
+
 @onready var serve_indicator := $ServeIndicator  # Crear nodo TextureRect en escena
 
 var STT
@@ -51,19 +64,22 @@ func _ready():
 		STT.connect("error", self._on_error)
 		STT.connect("listening_completed", self._on_listening_completed)
 	
-			
 	# Inicia la escucha continua para detectar la palabra clave
 		_start_listening()
 	else:
 		print("Error: El singleton 'SpeechToText' no está disponible.")
 	
+	# Inicializar labels de tiempo
+	var timer_container = get_node("Games_Container/Timer_Container")
+	for i in range(1, 4):  # 3 sets en pádel
+		timer_labels.append(timer_container.get_node("Set_Timer" + str(i)))
 	
 	# Obtenemos el contenedor de labels de juegos
 	var games_container1 = get_node("Games_Container/VBoxContainer")
 	var games_container2 = get_node("Games_Container/VBoxContainer2")
 
 	# Obtenemos los labels para los sets de cada jugador
-	for i in range(1, 4):
+	for i in range(1, 4):  # Modificado para 3 sets
 		game_labels_p1.append(games_container1.get_node("Game" + str(i) + "_P1"))
 		game_labels_p2.append(games_container2.get_node("Game" + str(i) + "_P2"))
 
@@ -81,6 +97,9 @@ func _ready():
 	update_score_labels()
 	update_game_labels()
 	
+	# Iniciamos el primer set
+	_start_first_set()
+
 func _update_serve_indicator():
 	# Mueve el indicador a la posición correspondiente
 	if serving_player == 1:
@@ -153,15 +172,48 @@ func _check_set_win_condition():
 			sets_ganados_p1 += 1
 		else:
 			sets_ganados_p2 += 1
-		_end_game()
+		
+		# Verificar primero si hay victoria del partido
+		if sets_ganados_p1 >= 2 or sets_ganados_p2 >= 2:
+			_end_game()
+			return
+			
+		# Si no hay victoria, manejar el cambio de set
+		# Marcar el set actual como finalizado
+		set_states[current_game_index] = SetState.FINALIZADO
+		timer_labels[current_game_index].modulate = Color(1, 1, 1, 0.5)  # Hacer transparente
+		
+		# Si no es el último set, preparar el siguiente
+		if current_game_index < 2:  # 2 es el índice del último set (0-2)
+			# Alternar el servicio para el siguiente set
+			serving_player = 2 if serving_player == 1 else 1
+			_update_serve_indicator()
+			
+			current_game_index += 1
+			_last_total_games = 0  # Reiniciar contador para el nuevo set
+			
+			# Iniciar el nuevo set
+			active_set = current_game_index
+			set_states[active_set] = SetState.EN_PROGRESO
+			timer_labels[active_set].modulate = Color(1, 1, 1, 1)  # Restaurar opacidad
+			timer_labels[active_set].text = "00:00"
 
 func _start_tie_break():
 	print("Comienza el Tie-Break")
-	# Inicializar el marcador del tie-break
+	# Activar modo tie-break
+	is_tiebreak_active = true
+	
+	# Guardar el servidor inicial del tie-break (el que recibiría en el juego normal)
+	tiebreak_initial_server = 2 if serving_player == 1 else 1
+	serving_player = tiebreak_initial_server
+	_update_serve_indicator()
+	
+	# Reiniciar contadores
 	tbreak_scores_p1 = 0
 	tbreak_scores_p2 = 0
+	tiebreak_points_since_serve = 0
 
-	# Habilitar la visualización de los marcadores del tie-break
+	# Actualizar UI
 	tbreak_label_p1.text = str(tbreak_scores_p1)
 	tbreak_label_p2.text = str(tbreak_scores_p2)
 	tbreak_label_p1.show()
@@ -170,62 +222,99 @@ func _start_tie_break():
 	get_node("TBreak_P2_btn").show()
 	get_node("Button_P1").hide()
 	get_node("Button_P2").hide()
-	# Lógica adicional del tie-break (incrementar puntos y determinar ganador).
-	# Esto va en otro método que se ejecutara cuando se asigne un punto
-	_check_tiebreak_win_condition()
-
-func _check_tiebreak_win_condition():
-	# Verificar si un jugador gano el tie-break
-	if (tbreak_scores_p1 >= 7 or tbreak_scores_p2 >= 7) and abs(tbreak_scores_p1 - tbreak_scores_p2) >= 2:
-		# En este punto un jugador gano el set, por tiebreak
-		if tbreak_scores_p1 > tbreak_scores_p2:
-			print("Jugador 1 gano el Tie-Break")
-			game_scores_p1[current_game_index] = 7  # Incrementa el puntaje del set
-			sets_ganados_p1 += 1
-			update_game_labels()
-		else:
-			print("Jugador 2 gano el Tie-Break")
-			game_scores_p2[current_game_index] = 7  # Incrementa el puntaje del set
-			sets_ganados_p2 += 1
-			update_game_labels()
-		# Ocultar la visualización de los labels
-		tbreak_label_p1.hide()
-		tbreak_label_p2.hide()
-		get_node("TBreak_P1_btn").hide()
-		get_node("TBreak_P2_btn").hide()
-		get_node("Button_P1").show()
-		get_node("Button_P2").show()
-		update_game_labels()
-		_end_game()
-	else:
-		# El tiebreak continua
-		print("El tie-break continua")
 
 func _increment_tiebreak_score(player):
+	if not is_tiebreak_active:
+		return
+		
 	if player == 1:
 		tbreak_scores_p1 += 1
 		tbreak_label_p1.text = str(tbreak_scores_p1)
 	elif player == 2:
 		tbreak_scores_p2 += 1
 		tbreak_label_p2.text = str(tbreak_scores_p2)
+	
+	# Incrementar contador de puntos desde último cambio de servicio
+	tiebreak_points_since_serve += 1
+	
+	# En el tie-break, el servicio cambia cada 2 puntos
+	# Excepto el primer punto donde solo sirve una vez
+	if (tbreak_scores_p1 + tbreak_scores_p2 == 1) or (tiebreak_points_since_serve >= 2):
+		serving_player = 2 if serving_player == 1 else 1
+		tiebreak_points_since_serve = 0
+		_update_serve_indicator()
+	
 	_check_tiebreak_win_condition()
+
+func _check_tiebreak_win_condition():
+	if not is_tiebreak_active:
+		return
+		
+	# Verificar si un jugador ganó el tie-break
+	if (tbreak_scores_p1 >= 7 or tbreak_scores_p2 >= 7) and abs(tbreak_scores_p1 - tbreak_scores_p2) >= 2:
+		# Determinar ganador
+		var winner = 1 if tbreak_scores_p1 > tbreak_scores_p2 else 2
+		print("Jugador " + str(winner) + " ganó el Tie-Break")
+		
+		# Actualizar marcador del set
+		if winner == 1:
+			game_scores_p1[current_game_index] = 7
+			sets_ganados_p1 += 1
+		else:
+			game_scores_p2[current_game_index] = 7
+			sets_ganados_p2 += 1
+			
+		# Finalizar el set actual
+		set_states[current_game_index] = SetState.FINALIZADO
+		timer_labels[current_game_index].modulate = Color(1, 1, 1, 0.5)
+		
+		# Restaurar UI
+		tbreak_label_p1.hide()
+		tbreak_label_p2.hide()
+		get_node("TBreak_P1_btn").hide()
+		get_node("TBreak_P2_btn").hide()
+		get_node("Button_P1").show()
+		get_node("Button_P2").show()
+		
+		# Actualizar marcadores
+		update_game_labels()
+		
+		# Desactivar modo tie-break
+		is_tiebreak_active = false
+		
+		# Preparar servicio para el siguiente set
+		serving_player = tiebreak_initial_server
+		
+		# Verificar si el partido ha terminado o continuar con el siguiente set
+		if sets_ganados_p1 >= 2 or sets_ganados_p2 >= 2:
+			_end_game()
+		else:
+			# Preparar siguiente set si el partido continúa
+			if current_game_index < 2:  # Modificado para pádel (3 sets)
+				current_game_index += 1
+				_last_total_games = 0
+				active_set = current_game_index
+				set_states[active_set] = SetState.EN_PROGRESO
+				timer_labels[active_set].modulate = Color(1, 1, 1, 1)
+				timer_labels[active_set].text = "00:00"
+				_update_serve_indicator()
 
 func _end_game():
 	# Verificar si algún jugador ya ganó el partido
 	if sets_ganados_p1 >= 2 or sets_ganados_p2 >= 2:
+		# Asegurar que el último set quede marcado como finalizado
+		if active_set >= 0:
+			set_states[active_set] = SetState.FINALIZADO
+			timer_labels[active_set].modulate = Color(1, 1, 1, 0.5)
+		
 		# Determinar quien gano el juego
 		if sets_ganados_p1 > sets_ganados_p2:
 			print("Juego terminado. Ganador: Jugador 1")
 		else:
 			print("Juego terminado. Ganador: Jugador 2")
-		# Aquí puedes implementar lógica adicional para finalizar el juego o reiniciarlo
-		current_game_index = 0
-		game_scores_p1 = [0, 0, 0]
-		game_scores_p2 = [0, 0, 0]
-		sets_ganados_p1 = 0
-		sets_ganados_p2 = 0
-		serving_player = 1  # Reiniciamos el saque al jugador 1 al iniciar un nuevo partido
-		_update_serve_indicator()
+		
+		# Reiniciar el juego
+		_reset_game()
 		return  # Finalizamos la función aqui
 
 	# Cambiamos el saque al terminar el set
@@ -254,6 +343,25 @@ func _reset_game():
 	current_set = 0
 	game_scores_p1 = [0, 0, 0]
 	game_scores_p2 = [0, 0, 0]
+	_last_total_games = 0  # Reiniciar el contador de juegos totales
+	serving_player = 1  # Reiniciar al jugador que saca al inicio del partido
+	_update_serve_indicator()
+	
+	# Reiniciar todos los timers y estados
+	set_timers = [0.0, 0.0, 0.0]
+	set_states = [SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO]
+	active_set = -1
+	
+	for label in timer_labels:
+		label.text = "00:00"
+		label.modulate = Color(1, 1, 1, 0.5)
+	
+	# Reiniciar estado del tie-break
+	is_tiebreak_active = false
+	tiebreak_points_since_serve = 0
+	
+	# Iniciar el primer set
+	_start_first_set()
 
 # Un ejemplo de llamada a _check_set_win_condition()
 func _jugar_set(puntos_p1, puntos_p2):
@@ -335,11 +443,16 @@ func _on_error(errorcode):
 	
 # Función que se llama cada frame
 func _process(delta):
+	# Actualizar timer del set actual
+	if active_set >= 0 and active_set < 3 and set_states[active_set] == SetState.EN_PROGRESO:
+		set_timers[active_set] += delta
+		timer_labels[active_set].text = _format_time(set_timers[active_set])
+	
 	# Verifica si la escucha está activa y la reinicia si es necesario
 	if not is_listening_active:
 		_start_listening()
-	
-		# Lógica para detectar cambio de saque cada juego
+		
+	# Lógica para detectar cambio de saque cada juego
 	var current_total = game_scores_p1[current_game_index] + game_scores_p2[current_game_index]
 	
 	if current_total > _last_total_games:
@@ -373,3 +486,24 @@ func _on_get_output_btn_button_down():
 		var words = STT.getWords()
 		$TextEdit2.text = words
 	pass # Replace with function body.
+
+func _start_first_set():
+	# Reiniciar variables del juego
+	sets_ganados_p1 = 0
+	sets_ganados_p2 = 0
+	current_set = 0
+	game_scores_p1 = [0, 0, 0]
+	game_scores_p2 = [0, 0, 0]
+	serving_player = 1  # Reiniciamos el saque al jugador 1 al iniciar un nuevo partido
+	_update_serve_indicator()
+	
+	# Inicializar el primer set y su timer
+	active_set = 0  # Activamos el primer set
+	set_states[0] = SetState.EN_PROGRESO  # Marcamos el primer set como en progreso
+	timer_labels[0].modulate = Color(1, 1, 1, 1)  # Opacidad normal para el primer timer
+	timer_labels[0].text = "00:00"  # Inicializamos el texto del timer
+
+func _format_time(seconds: float) -> String:
+	var minutes = int(seconds) / 60
+	var secs = int(seconds) % 60
+	return "%02d:%02d" % [minutes, secs]

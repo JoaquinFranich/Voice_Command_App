@@ -1,9 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://dwvtp1j8rjqjc"]
+[gd_scene load_steps=7 format=3 uid="uid://dwvtp1j8rjqjc"]
 
 [ext_resource type="Script" path="res://Scripts/Paddle_Counter.gd" id="1_prutt"]
 [ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="2_er2ho"]
 [ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="3_ue63s"]
 [ext_resource type="Texture2D" uid="uid://b6ppvdn6pci3l" path="res://icon.svg" id="4_ithvi"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0dknr"]
+font_color = Color(1, 1, 1, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7munq"]
+font_size = 42
+font_color = Color(0.00392157, 0.00392157, 0.00392157, 0.407843)
 
 [node name="Paddle_Counter" type="Control"]
 layout_mode = 3
@@ -58,6 +65,54 @@ offset_top = -293.0
 offset_right = 518.0
 offset_bottom = 187.0
 scale = Vector2(0.783935, 0.783935)
+
+[node name="Timer_Container" type="HBoxContainer" parent="Games_Container"]
+layout_direction = 1
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+size_flags_stretch_ratio = 11.26
+alignment = 1
+
+[node name="Spacer1" type="Label" parent="Games_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "00000000000000000000000000"
+label_settings = SubResource("LabelSettings_0dknr")
+
+[node name="Set_Timer1" type="Label" parent="Games_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_7munq")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer2" type="Label" parent="Games_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "00000000"
+label_settings = SubResource("LabelSettings_0dknr")
+
+[node name="Set_Timer2" type="Label" parent="Games_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_7munq")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer3" type="Label" parent="Games_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "00000000"
+label_settings = SubResource("LabelSettings_0dknr")
+
+[node name="Set_Timer3" type="Label" parent="Games_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_7munq")
 
 [node name="VBoxContainer" type="HBoxContainer" parent="Games_Container"]
 layout_mode = 2
