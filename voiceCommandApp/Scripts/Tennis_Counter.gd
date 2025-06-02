@@ -48,6 +48,11 @@ var is_listening_for_keyword = true  # Estado para escuchar la palabra clave
 var keyword = "gana"  # Palabra clave para activar el modo de escucha
 var is_listening_active = false  # Estado para verificar si la escucha está activa
 
+# Variable para controlar el estado del tie-break
+var is_tiebreak_active = false
+var tiebreak_initial_server = 1  # Almacena quién comenzó sirviendo el tie-break
+var tiebreak_points_since_serve = 0  # Contador para cambio de servicio en tie-break
+
 func _ready():
 	# Solicita permiso para usar el micrófono
 	OS.request_permission("RECORD_AUDIO")
@@ -201,11 +206,20 @@ func _check_set_win_condition():
 
 func _start_tie_break():
 	print("Comienza el Tie-Break")
-	# Inicializar el marcador del tie-break
+	# Activar modo tie-break
+	is_tiebreak_active = true
+	
+	# Guardar el servidor inicial del tie-break (el que recibiría en el juego normal)
+	tiebreak_initial_server = 2 if serving_player == 1 else 1
+	serving_player = tiebreak_initial_server
+	_update_serve_indicator()
+	
+	# Reiniciar contadores
 	tbreak_scores_p1 = 0
 	tbreak_scores_p2 = 0
+	tiebreak_points_since_serve = 0
 
-	# Habilitar la visualización de los marcadores del tie-break
+	# Actualizar UI
 	tbreak_label_p1.text = str(tbreak_scores_p1)
 	tbreak_label_p2.text = str(tbreak_scores_p2)
 	tbreak_label_p1.show()
@@ -214,45 +228,83 @@ func _start_tie_break():
 	get_node("TBreak_P2_btn").show()
 	get_node("Button_P1").hide()
 	get_node("Button_P2").hide()
-	# Lógica adicional del tie-break (incrementar puntos y determinar ganador).
-	# Esto va en otro método que se ejecutara cuando se asigne un punto
-	_check_tiebreak_win_condition()
-
-func _check_tiebreak_win_condition():
-	# Verificar si un jugador gano el tie-break
-	if (tbreak_scores_p1 >= 7 or tbreak_scores_p2 >= 7) and abs(tbreak_scores_p1 - tbreak_scores_p2) >= 2:
-		# En este punto un jugador gano el set, por tiebreak
-		if tbreak_scores_p1 > tbreak_scores_p2:
-			print("Jugador 1 gano el Tie-Break")
-			game_scores_p1[current_game_index] = 7  # Incrementa el puntaje del set
-			sets_ganados_p1 += 1
-			update_game_labels()
-		else:
-			print("Jugador 2 gano el Tie-Break")
-			game_scores_p2[current_game_index] = 7  # Incrementa el puntaje del set
-			sets_ganados_p2 += 1
-			update_game_labels()
-		# Ocultar la visualización de los labels
-		tbreak_label_p1.hide()
-		tbreak_label_p2.hide()
-		get_node("TBreak_P1_btn").hide()
-		get_node("TBreak_P2_btn").hide()
-		get_node("Button_P1").show()
-		get_node("Button_P2").show()
-		update_game_labels()
-		_end_game()
-	else:
-		# El tiebreak continua
-		print("El tie-break continua")
 
 func _increment_tiebreak_score(player):
+	if not is_tiebreak_active:
+		return
+		
 	if player == 1:
 		tbreak_scores_p1 += 1
 		tbreak_label_p1.text = str(tbreak_scores_p1)
 	elif player == 2:
 		tbreak_scores_p2 += 1
 		tbreak_label_p2.text = str(tbreak_scores_p2)
+	
+	# Incrementar contador de puntos desde último cambio de servicio
+	tiebreak_points_since_serve += 1
+	
+	# En el tie-break, el servicio cambia cada 2 puntos
+	# Excepto el primer punto donde solo sirve una vez
+	if (tbreak_scores_p1 + tbreak_scores_p2 == 1) or (tiebreak_points_since_serve >= 2):
+		serving_player = 2 if serving_player == 1 else 1
+		tiebreak_points_since_serve = 0
+		_update_serve_indicator()
+	
 	_check_tiebreak_win_condition()
+
+func _check_tiebreak_win_condition():
+	if not is_tiebreak_active:
+		return
+		
+	# Verificar si un jugador ganó el tie-break
+	if (tbreak_scores_p1 >= 7 or tbreak_scores_p2 >= 7) and abs(tbreak_scores_p1 - tbreak_scores_p2) >= 2:
+		# Determinar ganador
+		var winner = 1 if tbreak_scores_p1 > tbreak_scores_p2 else 2
+		print("Jugador " + str(winner) + " ganó el Tie-Break")
+		
+		# Actualizar marcador del set
+		if winner == 1:
+			game_scores_p1[current_game_index] = 7
+			sets_ganados_p1 += 1
+		else:
+			game_scores_p2[current_game_index] = 7
+			sets_ganados_p2 += 1
+			
+		# Finalizar el set actual
+		set_states[current_game_index] = SetState.FINALIZADO
+		timer_labels[current_game_index].modulate = Color(1, 1, 1, 0.5)
+		
+		# Restaurar UI
+		tbreak_label_p1.hide()
+		tbreak_label_p2.hide()
+		get_node("TBreak_P1_btn").hide()
+		get_node("TBreak_P2_btn").hide()
+		get_node("Button_P1").show()
+		get_node("Button_P2").show()
+		
+		# Actualizar marcadores
+		update_game_labels()
+		
+		# Desactivar modo tie-break
+		is_tiebreak_active = false
+		
+		# Preparar servicio para el siguiente set
+		# En tenis, quien recibió primero en el tie-break sirve primero en el siguiente set
+		serving_player = tiebreak_initial_server
+		
+		# Verificar si el partido ha terminado o continuar con el siguiente set
+		if sets_ganados_p1 >= 3 or sets_ganados_p2 >= 3:
+			_end_game()
+		else:
+			# Preparar siguiente set si el partido continúa
+			if current_game_index < 4:
+				current_game_index += 1
+				_last_total_games = 0
+				active_set = current_game_index
+				set_states[active_set] = SetState.EN_PROGRESO
+				timer_labels[active_set].modulate = Color(1, 1, 1, 1)
+				timer_labels[active_set].text = "00:00"
+				_update_serve_indicator()
 
 func _end_game():
 	# Verificar si algún jugador ya ganó el partido
