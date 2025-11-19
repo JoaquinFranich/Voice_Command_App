@@ -114,11 +114,11 @@ size_flags_vertical = 1
 text = "00:00"
 label_settings = SubResource("LabelSettings_7munq")
 
-[node name="VBoxContainer" type="HBoxContainer" parent="Games_Container"]
+[node name="P1_Points_Container" type="HBoxContainer" parent="Games_Container"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Points_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="Points_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -127,7 +127,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game1_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="Game1_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -136,7 +136,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game2_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="Game2_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -145,7 +145,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game3_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="Game3_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -154,7 +154,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game4_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="Game4_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -164,7 +164,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game5_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="Game5_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -174,7 +174,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="TBreak_P1" type="Label" parent="Games_Container/VBoxContainer"]
+[node name="TBreak_P1" type="Label" parent="Games_Container/P1_Points_Container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -184,12 +184,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="VBoxContainer2" type="HBoxContainer" parent="Games_Container"]
+[node name="P2_Points_Container" type="HBoxContainer" parent="Games_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Points_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="Points_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -198,7 +198,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game1_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="Game1_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -207,7 +207,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game2_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="Game2_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -216,7 +216,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game3_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="Game3_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
@@ -225,7 +225,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game4_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="Game4_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -235,7 +235,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="Game5_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="Game5_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -245,7 +245,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="TBreak_P2" type="Label" parent="Games_Container/VBoxContainer2"]
+[node name="TBreak_P2" type="Label" parent="Games_Container/P2_Points_Container"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
