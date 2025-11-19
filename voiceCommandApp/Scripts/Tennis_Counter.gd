@@ -78,8 +78,8 @@ func _ready():
 		timer_labels.append(timer_container.get_node("Set_Timer" + str(i)))
 	
 	# Obtenemos el contenedor de labels de juegos
-	var games_container1 = get_node("Games_Container/VBoxContainer")
-	var games_container2 = get_node("Games_Container/VBoxContainer2")
+	var games_container1 = get_node("Games_Container/P1_Points_Container")
+	var games_container2 = get_node("Games_Container/P2_Points_Container")
 
 	# Obtenemos los labels para los sets de cada jugador
 	for i in range(1, 6):
@@ -91,10 +91,10 @@ func _ready():
 	game_scores_p2 = [0, 0, 0, 0, 0]
 
 	# Obtenemos los labels de los puntos de cada jugador
-	label_p1 = get_node("Games_Container/VBoxContainer/Points_P1")
-	label_p2 = get_node("Games_Container/VBoxContainer2/Points_P2")
-	tbreak_label_p1 = get_node("Games_Container/VBoxContainer/TBreak_P1")
-	tbreak_label_p2 = get_node("Games_Container/VBoxContainer2/TBreak_P2")
+	label_p1 = get_node("Games_Container/P1_Points_Container/Points_P1")
+	label_p2 = get_node("Games_Container/P2_Points_Container/Points_P2")
+	tbreak_label_p1 = get_node("Games_Container/P1_Points_Container/TBreak_P1")
+	tbreak_label_p2 = get_node("Games_Container/P2_Points_Container/TBreak_P2")
 
 	# Actualizamos los labels iniciales
 	update_score_labels()

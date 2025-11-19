@@ -55,8 +55,8 @@ func _ready():
 		timer_labels_voly.append(timer_container.get_node("Set_Timer" + str(i)))
 
 	# VOLEY: 5 sets máximo
-	var sets_container1 = get_node("Sets_Container/VBoxContainer")
-	var sets_container2 = get_node("Sets_Container/VBoxContainer2")
+	var sets_container1 = get_node("Sets_Container/P1_Points_Container")
+	var sets_container2 = get_node("Sets_Container/P2_Points_Container")
 
 	for i in range(1, 6):
 		set_labels_p1_voly.append(sets_container1.get_node("Set" + str(i) + "_P1"))
@@ -65,8 +65,8 @@ func _ready():
 	set_scores_p1_voly = [0, 0, 0, 0, 0]
 	set_scores_p2_voly = [0, 0, 0, 0, 0]
 
-	label_p1_voly = get_node("Sets_Container/VBoxContainer/Points_P1")
-	label_p2_voly = get_node("Sets_Container/VBoxContainer2/Points_P2")
+	label_p1_voly = get_node("Sets_Container/P1_Points_Container/Points_P1")
+	label_p2_voly = get_node("Sets_Container/P2_Points_Container/Points_P2")
 
 	update_score_labels_voly()
 	update_set_labels_voly()
