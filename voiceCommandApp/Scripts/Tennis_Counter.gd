@@ -41,6 +41,9 @@ var set_timers = [0.0, 0.0, 0.0, 0.0, 0.0]  # Tiempo acumulado por set en segund
 var active_set = -1  # Set actualmente en juego
 var timer_labels = []  # Labels para mostrar los tiempos
 
+const GAME_OVER_SCENE := preload("res://Scenes/Game_Over_Screen.tscn")
+var game_over_screen
+
 @onready var serve_indicator := $ServeIndicator  # Crear nodo TextureRect en escena
 
 var STT
@@ -99,12 +102,36 @@ func _ready():
 	
 	# Iniciamos el primer set
 	_start_first_set()
+	_init_game_over_screen()
 
 # Función para formatear el tiempo
 func _format_time(seconds: float) -> String:
 	var minutes = int(seconds) / 60
 	var secs = int(seconds) % 60
 	return "%02d:%02d" % [minutes, secs]
+
+func _init_game_over_screen():
+	if GAME_OVER_SCENE:
+		game_over_screen = GAME_OVER_SCENE.instantiate()
+		add_child(game_over_screen)
+		game_over_screen.connect("restart_requested", Callable(self, "_on_game_over_restart_requested"))
+		game_over_screen.connect("back_to_menu_requested", Callable(self, "_on_game_over_back_to_menu_requested"))
+
+func _show_game_over_screen(winner: int):
+	if not game_over_screen:
+		return
+	var total_time := 0.0
+	for time_value in set_timers:
+		total_time += time_value
+	var winner_label := "Jugador " + str(winner)
+	game_over_screen.show_summary(winner_label, game_scores_p1.duplicate(), game_scores_p2.duplicate(), total_time)
+
+func _on_game_over_restart_requested():
+	_reset_game()
+
+func _on_game_over_back_to_menu_requested():
+	_reset_game()
+	get_tree().change_scene_to_file("res://Scenes/Main_Menu.tscn")
 	
 func _update_serve_indicator():
 	# Mueve el indicador a la posición correspondiente
@@ -315,13 +342,10 @@ func _end_game():
 			timer_labels[active_set].modulate = Color(1, 1, 1, 0.5)
 		
 		# Determinar quien gano el juego
-		if sets_ganados_p1 > sets_ganados_p2:
-			print("Juego terminado. Ganador: Jugador 1")
-		else:
-			print("Juego terminado. Ganador: Jugador 2")
-			
-		# Reiniciar el juego usando la función _reset_game
-		_reset_game()
+		var winner = 1 if sets_ganados_p1 > sets_ganados_p2 else 2
+		print("Juego terminado. Ganador: Jugador " + str(winner))
+		active_set = -1
+		_show_game_over_screen(winner)
 		return  # Finalizamos la función aqui
 
 	# Si el juego no ha terminado, el cambio de set ya se manejó en _check_set_win_condition
@@ -330,6 +354,7 @@ func _reset_game():
 	sets_ganados_p1 = 0
 	sets_ganados_p2 = 0
 	current_set = 0
+	current_game_index = 0
 	game_scores_p1 = [0, 0, 0, 0, 0]
 	game_scores_p2 = [0, 0, 0, 0, 0]
 	_last_total_games = 0  # Reiniciar el contador de juegos totales
@@ -343,6 +368,21 @@ func _reset_game():
 	for label in timer_labels:
 		label.text = "00:00"
 		label.modulate = Color(1, 1, 1, 0.5)
+	
+	# Reiniciar estado del tie-break
+	is_tiebreak_active = false
+	tbreak_scores_p1 = 0
+	tbreak_scores_p2 = 0
+	tiebreak_points_since_serve = 0
+	tbreak_label_p1.hide()
+	tbreak_label_p2.hide()
+	get_node("TBreak_P1_btn").hide()
+	get_node("TBreak_P2_btn").hide()
+	get_node("Button_P1").show()
+	get_node("Button_P2").show()
+
+	update_score_labels()
+	update_game_labels()
 	
 	# Iniciar el primer set
 	_start_first_set()

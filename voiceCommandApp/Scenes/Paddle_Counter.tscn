@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dwvtp1j8rjqjc"]
 
-[ext_resource type="Script" path="res://Scripts/Paddle_Counter.gd" id="1_prutt"]
+[ext_resource type="Script" uid="uid://ch2fbd44mi14e" path="res://Scripts/Paddle_Counter.gd" id="1_prutt"]
 [ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="2_er2ho"]
 [ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="3_ue63s"]
 [ext_resource type="Texture2D" uid="uid://b6ppvdn6pci3l" path="res://icon.svg" id="4_ithvi"]
@@ -25,7 +25,7 @@ size_flags_horizontal = 4
 script = ExtResource("1_prutt")
 
 [node name="Button_P1" type="Button" parent="."]
-layout_mode = 2
+layout_mode = 0
 offset_left = -512.0
 offset_top = -260.0
 offset_right = -362.0
@@ -33,7 +33,7 @@ offset_bottom = -110.0
 text = "P1"
 
 [node name="Button_P2" type="Button" parent="."]
-layout_mode = 2
+layout_mode = 0
 offset_left = -512.0
 offset_top = -68.0
 offset_right = -362.0
@@ -283,7 +283,6 @@ offset_bottom = 297.0
 text = "GetOutput"
 
 [node name="TextEdit" type="TextEdit" parent="."]
-clip_contents = true
 layout_mode = 0
 offset_left = -192.0
 offset_top = 100.0
@@ -292,7 +291,6 @@ offset_bottom = 297.0
 wrap_mode = 1
 
 [node name="TextEdit2" type="TextEdit" parent="."]
-clip_contents = true
 layout_mode = 0
 offset_left = 128.0
 offset_top = 100.0

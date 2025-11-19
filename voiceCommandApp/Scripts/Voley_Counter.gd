@@ -20,8 +20,16 @@ var current_set_voly = 0
 var sets_ganados_p1_voly = 0
 var sets_ganados_p2_voly = 0
 
+enum SetState { NO_INICIADO, EN_PROGRESO, FINALIZADO }
+var set_states_voly = [SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO]
+var set_timers_voly = [0.0, 0.0, 0.0, 0.0, 0.0]
+var active_set_voly = -1
+var timer_labels_voly = []
+
+const GAME_OVER_SCENE := preload("res://Scenes/Game_Over_Screen.tscn")
+var game_over_screen
+
 # VOLEY: Lógica de cambio de saque según reglas oficiales
-var _last_serving_team := 1  # Para controlar saque inicial por set
 var serving_player := 1 # 1 = Jugador 1, 2 = Jugador 2
 
 @onready var serve_indicator := $ServeIndicator  # Crear nodo TextureRect en escena
@@ -42,6 +50,10 @@ func _ready():
 		STT_voly.connect("listening_completed", self._on_listening_completed_voly)
 		#_start_listening_voly()
 
+	var timer_container = get_node("Sets_Container/Timer_Container")
+	for i in range(1, 6):
+		timer_labels_voly.append(timer_container.get_node("Set_Timer" + str(i)))
+
 	# VOLEY: 5 sets máximo
 	var sets_container1 = get_node("Sets_Container/VBoxContainer")
 	var sets_container2 = get_node("Sets_Container/VBoxContainer2")
@@ -58,17 +70,18 @@ func _ready():
 
 	update_score_labels_voly()
 	update_set_labels_voly()
+	_start_first_set_voly()
+	_init_game_over_screen()
 	
 func _process(delta):
 	# Verifica si la escucha está activa y la reinicia si es necesario
 	if not is_listening_active_voly:
 		_start_listening_voly()
-		
-	 # VOLEY: Cambio automático de saque al iniciar nuevo set
-	if _last_serving_team != current_set_voly:
-		serving_player = 2 if (current_set_voly % 2 == 0) else 1
-		_update_serve_indicator()
-		_last_serving_team = current_set_voly
+	
+	# Actualizar timer del set actual
+	if active_set_voly >= 0 and active_set_voly < timer_labels_voly.size() and set_states_voly[active_set_voly] == SetState.EN_PROGRESO:
+		set_timers_voly[active_set_voly] += delta
+		timer_labels_voly[active_set_voly].text = _format_time_voly(set_timers_voly[active_set_voly])
 	
 func _update_serve_indicator():
 	# Mueve el indicador a la posición correspondiente
@@ -76,8 +89,6 @@ func _update_serve_indicator():
 		serve_indicator.position = Vector2(371, -216)  # Posición izquierda
 	else:
 		serve_indicator.position = Vector2(371, -28)  # Posición derecha
-
-var _last_total_games := 0  # Para detectar cambios en juegos
 
 func update_score_labels_voly():
 	# VOLEY: Mostrar puntuación numérica directa
@@ -116,28 +127,32 @@ func _check_win_condition_voly():
 	var p1 = player1_score_voly
 	var p2 = player2_score_voly
 
-	if (p1 >= target || p2 >= target) && diff >= 2:
-		if p1 > p2:
-			set_scores_p1_voly[current_set_voly] = 1
+	if (p1 >= target or p2 >= target) and diff >= 2:
+		var winner = 1 if p1 > p2 else 2
+		set_scores_p1_voly[current_set_voly] = p1
+		set_scores_p2_voly[current_set_voly] = p2
+		if winner == 1:
 			sets_ganados_p1_voly += 1
 		else:
-			set_scores_p2_voly[current_set_voly] = 1
 			sets_ganados_p2_voly += 1
 		
-		_check_match_win_condition_voly()
+		set_states_voly[current_set_voly] = SetState.FINALIZADO
+		if current_set_voly < timer_labels_voly.size():
+			timer_labels_voly[current_set_voly].modulate = Color(1, 1, 1, 0.5)
+		
 		update_set_labels_voly()
+		var match_finished = _check_match_win_condition_voly()
 		_reset_scores_voly()
+		
+		if not match_finished:
+			_prepare_next_set_voly()
 
-func _check_match_win_condition_voly():
+func _check_match_win_condition_voly() -> bool:
 	# VOLEY: 3 sets ganados para victoria
-	if sets_ganados_p1_voly >= 3 || sets_ganados_p2_voly >= 3:
-		print("Partido terminado. Ganador: %s" % ["Equipo 1" if sets_ganados_p1_voly > sets_ganados_p2_voly else "Equipo 2"])
-		_reset_game_voly()
-	else:
-		current_set_voly += 1
-		if current_set_voly >= 5:
-			print("Máximo de sets alcanzado")
-			_reset_game_voly()
+	if sets_ganados_p1_voly >= 3 or sets_ganados_p2_voly >= 3:
+		_end_match_voly()
+		return true
+	return false
 
 func _reset_scores_voly():
 	player1_score_voly = 0
@@ -150,7 +165,75 @@ func _reset_game_voly():
 	set_scores_p2_voly = [0, 0, 0, 0, 0]
 	sets_ganados_p1_voly = 0
 	sets_ganados_p2_voly = 0
+	set_states_voly = [SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO, SetState.NO_INICIADO]
+	set_timers_voly = [0.0, 0.0, 0.0, 0.0, 0.0]
+	for label in timer_labels_voly:
+		label.text = "00:00"
+		label.modulate = Color(1, 1, 1, 0.5)
+	update_set_labels_voly()
 	_reset_scores_voly()
+	_start_first_set_voly()
+
+func _start_first_set_voly():
+	current_set_voly = 0
+	active_set_voly = 0
+	if set_states_voly.size() > 0:
+		set_states_voly[0] = SetState.EN_PROGRESO
+	if timer_labels_voly.size() > 0:
+		timer_labels_voly[0].modulate = Color(1, 1, 1, 1)
+		timer_labels_voly[0].text = "00:00"
+		set_timers_voly[0] = 0.0
+	_apply_serving_rules_for_set(0)
+
+func _end_match_voly():
+	var winner = 1 if sets_ganados_p1_voly > sets_ganados_p2_voly else 2
+	active_set_voly = -1
+	_show_game_over_screen(winner)
+
+func _prepare_next_set_voly():
+	current_set_voly += 1
+	if current_set_voly >= set_labels_p1_voly.size():
+		_end_match_voly()
+		return
+	active_set_voly = current_set_voly
+	set_states_voly[current_set_voly] = SetState.EN_PROGRESO
+	set_timers_voly[current_set_voly] = 0.0
+	if current_set_voly < timer_labels_voly.size():
+		timer_labels_voly[current_set_voly].modulate = Color(1, 1, 1, 1)
+		timer_labels_voly[current_set_voly].text = "00:00"
+	_apply_serving_rules_for_set(current_set_voly)
+
+func _apply_serving_rules_for_set(set_index: int):
+	serving_player = 2 if (set_index % 2 == 0) else 1
+	_update_serve_indicator()
+
+func _format_time_voly(seconds: float) -> String:
+	var minutes = int(seconds) / 60
+	var secs = int(seconds) % 60
+	return "%02d:%02d" % [minutes, secs]
+
+func _init_game_over_screen():
+	if GAME_OVER_SCENE:
+		game_over_screen = GAME_OVER_SCENE.instantiate()
+		add_child(game_over_screen)
+		game_over_screen.connect("restart_requested", Callable(self, "_on_game_over_restart_requested"))
+		game_over_screen.connect("back_to_menu_requested", Callable(self, "_on_game_over_back_to_menu_requested"))
+
+func _show_game_over_screen(winner: int):
+	if not game_over_screen:
+		return
+	var total_time := 0.0
+	for time_value in set_timers_voly:
+		total_time += time_value
+	var winner_label := "Equipo " + str(winner)
+	game_over_screen.show_summary(winner_label, set_scores_p1_voly.duplicate(), set_scores_p2_voly.duplicate(), total_time)
+
+func _on_game_over_restart_requested():
+	_reset_game_voly()
+
+func _on_game_over_back_to_menu_requested():
+	_reset_game_voly()
+	get_tree().change_scene_to_file("res://Scenes/Main_Menu.tscn")
 
 func _start_listening_voly():
 	if STT_voly and not is_listening_active_voly:

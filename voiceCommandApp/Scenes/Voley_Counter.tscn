@@ -1,9 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://csy7hbfqpgqg0"]
+[gd_scene load_steps=7 format=3 uid="uid://csy7hbfqpgqg0"]
 
-[ext_resource type="Script" path="res://Scripts/Voley_Counter.gd" id="1_7ecg2"]
+[ext_resource type="Script" uid="uid://drtsengfypmgr" path="res://Scripts/Voley_Counter.gd" id="1_7ecg2"]
 [ext_resource type="LabelSettings" uid="uid://ddfx7btn6oyh" path="res://Setings/Points.tres" id="2_20gga"]
 [ext_resource type="LabelSettings" uid="uid://suu2wjaohbam" path="res://Setings/new_label_settings.tres" id="3_scolo"]
 [ext_resource type="Texture2D" uid="uid://b6ppvdn6pci3l" path="res://icon.svg" id="4_ln4ag"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_iyb5r"]
+font_color = Color(1, 1, 1, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hqlj7"]
+font_size = 42
+font_color = Color(0.00392157, 0.00392157, 0.00392157, 0.407843)
 
 [node name="Voley_Counter" type="Control"]
 layout_mode = 3
@@ -18,7 +25,7 @@ size_flags_horizontal = 4
 script = ExtResource("1_7ecg2")
 
 [node name="Button_P1" type="Button" parent="."]
-layout_mode = 2
+layout_mode = 0
 offset_left = -512.0
 offset_top = -260.0
 offset_right = -362.0
@@ -26,7 +33,7 @@ offset_bottom = -110.0
 text = "P1"
 
 [node name="Button_P2" type="Button" parent="."]
-layout_mode = 2
+layout_mode = 0
 offset_left = -512.0
 offset_top = -68.0
 offset_right = -362.0
@@ -40,6 +47,78 @@ offset_top = -293.0
 offset_right = 518.0
 offset_bottom = 187.0
 scale = Vector2(0.783935, 0.783935)
+
+[node name="Timer_Container" type="HBoxContainer" parent="Sets_Container"]
+layout_direction = 1
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+size_flags_stretch_ratio = 11.26
+alignment = 1
+
+[node name="Spacer1" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "0000000000000000"
+label_settings = SubResource("LabelSettings_iyb5r")
+
+[node name="Set_Timer1" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_hqlj7")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer2" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "000"
+label_settings = SubResource("LabelSettings_iyb5r")
+
+[node name="Set_Timer2" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_hqlj7")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer3" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "000"
+label_settings = SubResource("LabelSettings_iyb5r")
+
+[node name="Set_Timer3" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_hqlj7")
+
+[node name="Spacer4" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "000"
+label_settings = SubResource("LabelSettings_iyb5r")
+
+[node name="Set_Timer4" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_hqlj7")
+
+[node name="Spacer5" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "00"
+label_settings = SubResource("LabelSettings_iyb5r")
+
+[node name="Set_Timer5" type="Label" parent="Sets_Container/Timer_Container"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "00:00"
+label_settings = SubResource("LabelSettings_hqlj7")
 
 [node name="VBoxContainer" type="HBoxContainer" parent="Sets_Container"]
 layout_mode = 2
@@ -186,7 +265,6 @@ offset_bottom = 297.0
 text = "GetOutput"
 
 [node name="TextEdit" type="TextEdit" parent="."]
-clip_contents = true
 layout_mode = 0
 offset_left = -192.0
 offset_top = 100.0
@@ -195,7 +273,6 @@ offset_bottom = 297.0
 wrap_mode = 1
 
 [node name="TextEdit2" type="TextEdit" parent="."]
-clip_contents = true
 layout_mode = 0
 offset_left = 128.0
 offset_top = 100.0
