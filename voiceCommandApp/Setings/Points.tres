@@ -1,5 +1,8 @@
-[gd_resource type="LabelSettings" format=3 uid="uid://ddfx7btn6oyh"]
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://ddfx7btn6oyh"]
+
+[ext_resource type="FontFile" uid="uid://bg5rwograwqyf" path="res://Assets/Fonts/DS-DIGIT.TTF" id="1_54jpy"]
 
 [resource]
-font_size = 80
+font = ExtResource("1_54jpy")
+font_size = 90
 font_color = Color(0.29923, 0.553244, 0.340258, 1)

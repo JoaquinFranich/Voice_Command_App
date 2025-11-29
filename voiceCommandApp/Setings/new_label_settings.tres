@@ -1,4 +1,7 @@
-[gd_resource type="LabelSettings" format=3 uid="uid://suu2wjaohbam"]
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://suu2wjaohbam"]
+
+[ext_resource type="FontFile" uid="uid://dusyd0xvic2ja" path="res://Assets/Fonts/DS-DIGIB.TTF" id="1_vhjj1"]
 
 [resource]
-font_size = 100
+font = ExtResource("1_vhjj1")
+font_size = 120
