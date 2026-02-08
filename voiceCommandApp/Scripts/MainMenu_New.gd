@@ -113,11 +113,31 @@ func _create_exit_confirmation():
 	
 	var no_btn = _create_styled_button("NO", Color.RED)
 	no_btn.custom_minimum_size = Vector2(150, 60)
-	no_btn.pressed.connect(func(): confirm_overlay.hide())
+	no_btn.pressed.connect(_hide_confirmation)
 	hbox.add_child(no_btn)
 
 func _on_select_discipline_pressed():
-	get_tree().change_scene_to_file("res://Scenes/DisciplineSelection.tscn")
+	SceneTransition.change_scene("res://Scenes/DisciplineSelection.tscn")
 
 func _on_exit_pressed():
+	_show_confirmation()
+
+func _show_confirmation():
 	confirm_overlay.show()
+	var center_node = confirm_overlay.get_child(0) # CenterContainer
+	# Start from above screen
+	center_node.position.y = - get_viewport_rect().size.y
+	
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUART)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(center_node, "position:y", 0.0, 0.5)
+
+func _hide_confirmation():
+	var center_node = confirm_overlay.get_child(0)
+	
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUART)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(center_node, "position:y", -get_viewport_rect().size.y, 0.5)
+	tween.finished.connect(confirm_overlay.hide)

@@ -95,7 +95,7 @@ func _build_ui():
 	menu_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	menu_btn.custom_minimum_size = Vector2(100, 50)
 	menu_btn.add_theme_font_size_override("font_size", 24)
-	menu_btn.pressed.connect(show_menu)
+	menu_btn.pressed.connect(_on_menu_pressed)
 	top_bar.add_child(menu_btn)
 	
 	var spacer1 = Control.new()
@@ -117,7 +117,7 @@ func _build_ui():
 	reset_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	reset_btn.custom_minimum_size = Vector2(100, 50)
 	reset_btn.add_theme_font_size_override("font_size", 24)
-	reset_btn.pressed.connect(func(): reset_requested.emit())
+	reset_btn.pressed.connect(_on_reset_pressed)
 	top_bar.add_child(reset_btn)
 	
 	# 5. Score Section
@@ -235,11 +235,29 @@ func _create_menu_overlay():
 	var exit_btn = _create_menu_button("SALIR AL MENU")
 	vbox.add_child(exit_btn)
 	
-	# Confirmation Panel (Hidden initially)
+	exit_btn.pressed.connect(func():
+		# Hide main menu container
+		vbox.get_parent().hide()
+		# Show and animate confirmation
+		var panel = menu_overlay.get_node("ConfirmPanel")
+		if panel:
+			_animate_panel_in(panel)
+	)
+	
+	# Confirmation Panel (Independent for animation)
+	_create_confirmation_panel()
+
+func _create_confirmation_panel():
 	var confirm_panel = VBoxContainer.new()
+	confirm_panel.name = "ConfirmPanel"
 	confirm_panel.hide()
 	confirm_panel.add_theme_constant_override("separation", 15)
-	vbox.add_child(confirm_panel)
+	
+	# Add to center container but as a sibling of the main menu vbox
+	# or add to menu_overlay directly for absolute control
+	# Let's add to menu_overlay directly to animate position easily
+	menu_overlay.add_child(confirm_panel)
+	confirm_panel.set_anchors_preset(Control.PRESET_CENTER)
 	
 	var confirm_label = Label.new()
 	confirm_label.text = "¿Estás seguro?\nSe perderá el progreso."
@@ -255,29 +273,42 @@ func _create_menu_overlay():
 	var yes_btn = _create_styled_button("SALIR", Color.WHITE, true, false)
 	yes_btn.add_theme_font_size_override("font_size", 32)
 	yes_btn.custom_minimum_size = Vector2(300, 120)
-	yes_btn.pressed.connect(func(): menu_requested.emit())
+	yes_btn.pressed.connect(func():
+		_animate_panel_out(confirm_panel, func(): menu_requested.emit())
+	)
 	hbox.add_child(yes_btn)
 	
 	var cancel_btn = _create_styled_button("CANCELAR", Color.RED, true, false)
 	cancel_btn.add_theme_font_size_override("font_size", 32)
 	cancel_btn.custom_minimum_size = Vector2(300, 120)
 	cancel_btn.pressed.connect(func():
-		confirm_panel.hide()
-		exit_btn.show()
-		resume_btn.show()
-		theme_box.show()
-		theme_label.show()
+		_animate_panel_out(confirm_panel, func():
+			confirm_panel.hide()
+			# Show main menu vbox again
+			var center = menu_overlay.get_child(0)
+			if center: center.show()
+		)
 	)
 	hbox.add_child(cancel_btn)
+
+func _animate_panel_in(panel: Control):
+	panel.show()
+	# Start above
+	var target_y = (get_viewport_rect().size.y - panel.size.y) / 2
+	panel.position.y = - panel.size.y - 100
+	panel.position.x = (get_viewport_rect().size.x - panel.size.x) / 2
 	
-	# Logic to show confirmation
-	exit_btn.pressed.connect(func():
-		exit_btn.hide()
-		resume_btn.hide()
-		theme_box.hide()
-		theme_label.hide()
-		confirm_panel.show()
-	)
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUART)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, "position:y", target_y, 0.5)
+
+func _animate_panel_out(panel: Control, callback: Callable):
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_QUART)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(panel, "position:y", -panel.size.y - 100, 0.5)
+	tween.finished.connect(callback)
 
 func _create_menu_button(text: String) -> Button:
 	var btn = Button.new()
@@ -300,13 +331,64 @@ func _create_color_button(color: Color, theme_enum: int) -> Button:
 	)
 	return btn
 
+func _on_menu_pressed():
+	await get_tree().create_timer(1.0).timeout
+	show_menu()
+
+func _on_reset_pressed():
+	# Visual Feedback
+	var tween = create_tween()
+	tween.set_parallel(true)
+	# Flash elements
+	if score_label:
+		tween.tween_property(score_label, "modulate", Color.RED, 0.2).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(score_label, "modulate", Color.WHITE, 0.2).set_delay(0.2)
+	if timer_label:
+		tween.tween_property(timer_label, "modulate", Color.RED, 0.2).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(timer_label, "modulate", Color.WHITE, 0.2).set_delay(0.2)
+	if sets_label:
+		tween.tween_property(sets_label, "modulate", Color.RED, 0.2).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(sets_label, "modulate", Color.WHITE, 0.2).set_delay(0.2)
+	if games_label:
+		tween.tween_property(games_label, "modulate", Color.RED, 0.2).set_trans(Tween.TRANS_SINE)
+		tween.tween_property(games_label, "modulate", Color.WHITE, 0.2).set_delay(0.2)
+	
+	await get_tree().create_timer(1.0).timeout
+	
+	# Reset Modulates just in case
+	if score_label: score_label.modulate = Color.WHITE
+	if timer_label: timer_label.modulate = Color.WHITE
+	if sets_label: sets_label.modulate = Color.WHITE
+	if games_label: games_label.modulate = Color.WHITE
+	
+	reset_requested.emit()
+
 func show_menu():
 	if menu_overlay:
 		menu_overlay.show()
 		pause_requested.emit()
+		
+		# Animate Pop-up from Top-Left
+		var center_content = menu_overlay.get_child(0)
+		if center_content:
+			center_content.pivot_offset = Vector2.ZERO # Top-Left pivot
+			center_content.scale = Vector2.ZERO
+			
+			var tween = create_tween()
+			tween.set_trans(Tween.TRANS_BACK)
+			tween.set_ease(Tween.EASE_OUT)
+			tween.tween_property(center_content, "scale", Vector2.ONE, 0.5)
 
 func hide_menu():
 	if menu_overlay:
+		var center_content = menu_overlay.get_child(0)
+		if center_content:
+			var tween = create_tween()
+			tween.set_trans(Tween.TRANS_BACK)
+			tween.set_ease(Tween.EASE_IN)
+			tween.tween_property(center_content, "scale", Vector2.ZERO, 0.3)
+			await tween.finished
+		
 		menu_overlay.hide()
 		resume_requested.emit()
 

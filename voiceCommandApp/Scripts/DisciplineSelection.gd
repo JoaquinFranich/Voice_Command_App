@@ -89,7 +89,7 @@ func _create_styled_button(text: String, color: Color) -> Button:
 	return btn
 
 func _load_scene(path: String):
-	get_tree().change_scene_to_file(path)
+	SceneTransition.change_scene(path)
 
 func _on_back_pressed():
-	get_tree().change_scene_to_file("res://Scenes/MainMenu_New.tscn")
+	SceneTransition.change_scene("res://Scenes/MainMenu_New.tscn")

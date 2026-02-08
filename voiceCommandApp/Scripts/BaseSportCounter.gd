@@ -222,7 +222,7 @@ func _on_game_over_restart_requested():
 
 func _on_game_over_back_to_menu_requested():
 	_reset_game() # Importante resetear antes de salir para limpiar
-	get_tree().change_scene_to_file("res://Scenes/MainMenu_New.tscn")
+	SceneTransition.change_scene("res://Scenes/MainMenu_New.tscn")
 
 func _reset_game():
 	# Reiniciar lógica común
@@ -284,7 +284,7 @@ func _decrement_score(player):
 
 func _on_menu_requested():
 	print("Menu requested")
-	get_tree().change_scene_to_file("res://Scenes/MainMenu_New.tscn")
+	SceneTransition.change_scene("res://Scenes/MainMenu_New.tscn")
 
 func _on_pause_requested():
 	is_game_paused = true

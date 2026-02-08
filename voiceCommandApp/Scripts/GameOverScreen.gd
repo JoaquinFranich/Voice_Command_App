@@ -78,7 +78,24 @@ func show_summary(winner_name: String, p1_scores: Array, p2_scores: Array, total
 	_update_winner(winner_name)
 	_update_total_time(total_time_seconds)
 	_update_set_scores(p1_scores, p2_scores)
+	
+	# Reset state
+	var panel = $Panel
+	if panel:
+		panel.scale = Vector2.ZERO
+		# Ensure pivot is correct in case of resize
+		panel.pivot_offset = panel.size / 2
+	
 	show()
+	
+	# Delay 1.5s
+	await get_tree().create_timer(1.5).timeout
+	
+	if panel:
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_ELASTIC)
+		tween.set_ease(Tween.EASE_OUT)
+		tween.tween_property(panel, "scale", Vector2.ONE, 0.8)
 
 func _update_winner(winner_name: String) -> void:
 	winner_label.text = "Ganador: %s" % winner_name
