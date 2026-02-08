@@ -12,8 +12,67 @@ signal back_to_menu_requested
 
 func _ready():
 	hide()
+	_apply_neon_style()
 	back_button.pressed.connect(_on_back_button_pressed)
 	restart_button.pressed.connect(_on_restart_button_pressed)
+
+func _apply_neon_style():
+	# Background
+	var panel = $Panel
+	if panel:
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color("#121212")
+		style.border_width_left = 2
+		style.border_width_top = 2
+		style.border_width_right = 2
+		style.border_width_bottom = 2
+		style.border_color = Color("#CCFF00")
+		style.corner_radius_top_left = 16
+		style.corner_radius_top_right = 16
+		style.corner_radius_bottom_right = 16
+		style.corner_radius_bottom_left = 16
+		panel.add_theme_stylebox_override("panel", style)
+	
+	# Font
+	var font = load("res://Assets/Fonts/DS-DIGI.TTF")
+	
+	# Winner Label
+	if winner_label:
+		if font: winner_label.add_theme_font_override("font", font)
+		winner_label.add_theme_color_override("font_color", Color("#CCFF00"))
+		winner_label.add_theme_font_size_override("font_size", 48)
+		
+	# Total Time
+	if total_time_label:
+		# if font: total_time_label.add_theme_font_override("font", font) # Keep standard font if preferred for readability
+		total_time_label.add_theme_color_override("font_color", Color.WHITE)
+		
+	# Buttons
+	_style_button(restart_button, Color("#CCFF00"))
+	_style_button(back_button, Color.WHITE)
+
+func _style_button(btn: Button, color: Color):
+	if not btn: return
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color.BLACK
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = color
+	style.corner_radius_top_left = 16
+	style.corner_radius_top_right = 16
+	style.corner_radius_bottom_right = 16
+	style.corner_radius_bottom_left = 16
+	
+	btn.add_theme_stylebox_override("normal", style)
+	btn.add_theme_stylebox_override("hover", style)
+	btn.add_theme_stylebox_override("pressed", style)
+	btn.add_theme_color_override("font_color", Color.WHITE)
+	if color == Color("#CCFF00"):
+		btn.add_theme_color_override("font_color", color)
+	
+	btn.flat = false
 
 func show_summary(winner_name: String, p1_scores: Array, p2_scores: Array, total_time_seconds: float) -> void:
 	_update_winner(winner_name)

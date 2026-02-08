@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bxyw2itxjmhrf"]
+
+[ext_resource type="Script" uid="uid://t2yddtxj5ls4" path="res://Scripts/UI_Mockup_Generator.gd" id="1_generator"]
+
+[node name="GameUI_Mockup" type="Control" unique_id=218254820]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_generator")
+current_theme = 2
+serving_player = 2
