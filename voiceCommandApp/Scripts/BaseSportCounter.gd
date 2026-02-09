@@ -171,7 +171,7 @@ func update_game_labels():
 			game_labels_p1[i].text = str(game_scores_p1[i])
 			game_labels_p2[i].text = str(game_scores_p2[i])
 
-func _increment_score(player):
+func _increment_score(_player):
 	pass
 
 func _check_win_condition():
@@ -197,7 +197,7 @@ func _start_first_set():
 		timer_labels[0].text = "00:00"
 
 func _format_time(seconds: float) -> String:
-	var minutes = int(seconds) / 60
+	var minutes = int(seconds / 60)
 	var secs = int(seconds) % 60
 	return "%02d:%02d" % [minutes, secs]
 
@@ -214,7 +214,9 @@ func _show_game_over_screen(winner: int):
 	var total_time := 0.0
 	for time_value in set_timers:
 		total_time += time_value
-	var winner_label := "Equipo " + str(winner) # Usamos "Equipo" genérico
+	var winner_label := "Equipo " + str(winner)
+	if game_ui and game_ui.has_method("get_team_name"):
+		winner_label = game_ui.get_team_name(winner)
 	game_over_screen.show_summary(winner_label, game_scores_p1.duplicate(), game_scores_p2.duplicate(), total_time)
 
 func _on_game_over_restart_requested():
@@ -279,7 +281,7 @@ func _handle_voice_command(player):
 	# Por defecto, suma punto. Hijos pueden sobreescribir para TieBreak buttons etc.
 	_increment_score(player)
 
-func _decrement_score(player):
+func _decrement_score(_player):
 	pass
 
 func _on_menu_requested():

@@ -18,6 +18,8 @@ signal timer_toggle_requested
 
 # State
 var serving_player_idx = 1 # 1 or 2
+var team1_name = "Equipo 1"
+var team2_name = "Equipo 2"
 
 # Visual Config
 var bg_color = Color("#121212")
@@ -37,6 +39,119 @@ var controls_area: BoxContainer
 var p1_box: BoxContainer
 var p2_box: BoxContainer
 var menu_overlay: Control
+
+func get_team_name(idx: int) -> String:
+	return team1_name if idx == 1 else team2_name
+
+func _update_team_names(name1: String, name2: String):
+	team1_name = name1
+	team2_name = name2
+	_update_name_buttons()
+
+func _update_name_buttons():
+	# Helper to preserve the "ball" icon if present
+	if btn_p1:
+		var has_ball = "🎾" in btn_p1.text
+		btn_p1.text = ("🎾 " if has_ball else "") + team1_name
+	if btn_p2:
+		var has_ball = "🎾" in btn_p2.text
+		btn_p2.text = ("🎾 " if has_ball else "") + team2_name
+
+
+func _create_name_edit_panel(trigger_btn, resume_btn, theme_box, theme_label, exit_btn):
+	var name_panel = VBoxContainer.new()
+	name_panel.name = "NamePanel"
+	name_panel.hide()
+	name_panel.add_theme_constant_override("separation", 20)
+	menu_overlay.add_child(name_panel)
+	name_panel.set_anchors_preset(Control.PRESET_CENTER)
+	
+	var title = Label.new()
+	title.text = "EDITAR NOMBRES"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 48)
+	name_panel.add_child(title)
+	
+	# Inputs
+	var input_box = VBoxContainer.new()
+	input_box.add_theme_constant_override("separation", 15)
+	name_panel.add_child(input_box)
+	
+	var edit_p1 = _create_name_input("Equipo 1")
+	input_box.add_child(edit_p1)
+	
+	var edit_p2 = _create_name_input("Equipo 2")
+	input_box.add_child(edit_p2)
+	
+	# Buttons
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 30)
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	name_panel.add_child(hbox)
+	
+	var save_btn = _create_styled_button("GUARDAR", Color.WHITE, true, false)
+	save_btn.custom_minimum_size = Vector2(200, 80)
+	save_btn.add_theme_font_size_override("font_size", 24)
+	hbox.add_child(save_btn)
+	
+	var cancel_btn = _create_styled_button("CANCELAR", Color.RED, true, false)
+	cancel_btn.custom_minimum_size = Vector2(200, 80)
+	cancel_btn.add_theme_font_size_override("font_size", 24)
+	hbox.add_child(cancel_btn)
+	
+	# Logic
+	trigger_btn.pressed.connect(func():
+		trigger_btn.hide()
+		resume_btn.hide()
+		theme_box.hide()
+		theme_label.hide()
+		exit_btn.hide()
+		edit_p1.text = team1_name
+		edit_p2.text = team2_name
+		_animate_panel_in(name_panel)
+	)
+	
+	save_btn.pressed.connect(func():
+		_update_team_names(edit_p1.text, edit_p2.text)
+		_animate_panel_out(name_panel, func():
+			name_panel.hide()
+			trigger_btn.show()
+			resume_btn.show()
+			theme_box.show()
+			theme_label.show()
+			exit_btn.show()
+		)
+	)
+	
+	cancel_btn.pressed.connect(func():
+		_animate_panel_out(name_panel, func():
+			name_panel.hide()
+			trigger_btn.show()
+			resume_btn.show()
+			theme_box.show()
+			theme_label.show()
+			exit_btn.show()
+		)
+	)
+
+func _create_name_input(placeholder: String) -> LineEdit:
+	var le = LineEdit.new()
+	le.placeholder_text = placeholder
+	le.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	le.custom_minimum_size = Vector2(400, 60)
+	le.add_theme_font_size_override("font_size", 32)
+	# Style
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color("#222222")
+	style.border_width_bottom = 2
+	style.border_color = accent_color
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	le.add_theme_stylebox_override("normal", style)
+	le.add_theme_stylebox_override("focus", style)
+	return le
+# ... (rest of file)
+# ... (rest of file)
 
 func _ready():
 	_update_theme_color()
@@ -160,7 +275,7 @@ func _build_ui():
 	p1_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	controls_area.add_child(p1_box)
 	
-	btn_p1 = _create_styled_button("P1 (+1)", accent_color, true, serving_player_idx == 1)
+	btn_p1 = _create_styled_button(team1_name, accent_color, true, serving_player_idx == 1)
 	btn_p1.pressed.connect(func(): point_added.emit(1))
 	p1_box.add_child(btn_p1)
 	
@@ -173,7 +288,7 @@ func _build_ui():
 	p2_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	controls_area.add_child(p2_box)
 	
-	btn_p2 = _create_styled_button("P2 (+1)", accent_color, true, serving_player_idx == 2)
+	btn_p2 = _create_styled_button(team2_name, accent_color, true, serving_player_idx == 2)
 	btn_p2.pressed.connect(func(): point_added.emit(2))
 	p2_box.add_child(btn_p2)
 
@@ -231,6 +346,10 @@ func _create_menu_overlay():
 	theme_box.add_child(blue_btn)
 	theme_box.add_child(orange_btn)
 	
+	# Names Button
+	var names_btn = _create_menu_button("NOMBRES")
+	vbox.add_child(names_btn)
+	
 	# Exit Button
 	var exit_btn = _create_menu_button("SALIR AL MENU")
 	vbox.add_child(exit_btn)
@@ -243,6 +362,9 @@ func _create_menu_overlay():
 		if panel:
 			_animate_panel_in(panel)
 	)
+	
+	# Name Edit Panel
+	_create_name_edit_panel(names_btn, resume_btn, theme_box, theme_label, exit_btn)
 	
 	# Confirmation Panel (Independent for animation)
 	_create_confirmation_panel()
@@ -317,7 +439,7 @@ func _create_menu_button(text: String) -> Button:
 	btn.custom_minimum_size = Vector2(300, 60)
 	return btn
 
-func _create_color_button(color: Color, theme_enum: int) -> Button:
+func _create_color_button(color: Color, theme_enum: UIConfig.ThemeColor) -> Button:
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(60, 60)
 	var style = StyleBoxFlat.new()

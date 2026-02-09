@@ -113,7 +113,7 @@ func _safe_score_lookup(scores: Array, index: int) -> int:
 	return scores[index] if index < scores.size() else 0
 
 func _format_time(seconds: float) -> String:
-	var minutes = int(seconds) / 60
+	var minutes = int(seconds / 60)
 	var secs = int(seconds) % 60
 	return "%02d:%02d" % [minutes, secs]
 
@@ -134,17 +134,17 @@ func _collect_game_labels(container: Node) -> Array:
 		return _extract_game_index(a.name) < _extract_game_index(b.name))
 	return labels
 
-func _extract_game_index(name: String) -> int:
+func _extract_game_index(node_name: String) -> int:
 	var prefix := "Game"
 	var start := prefix.length()
-	if not name.begins_with(prefix):
+	if not node_name.begins_with(prefix):
 		return 0
 	var digits := ""
-	for i in range(start, name.length()):
-		var char := name[i]
-		if char >= "0" and char <= "9":
-			digits += char
-		elif char == "_":
+	for i in range(start, node_name.length()):
+		var character := node_name[i]
+		if character >= "0" and character <= "9":
+			digits += character
+		elif character == "_":
 			break
 	if digits == "":
 		return 0
